@@ -36,6 +36,13 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: "AIzaSyCWbewCRdLhjHD73Y5Jt5hoUmbJFDQmkyc"
+          VITE_FIREBASE_AUTH_DOMAIN: "task-tracker-app-65dab.firebaseapp.com"
+          VITE_FIREBASE_PROJECT_ID: "task-tracker-app-65dab"
+          VITE_FIREBASE_STORAGE_BUCKET: "task-tracker-app-65dab.firebasestorage.app"
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "744363781870"
+          VITE_FIREBASE_APP_ID: "1:744363781870:web:aeb212bc0f13f64b14cdff"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
