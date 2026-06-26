@@ -2557,232 +2557,225 @@ const GoogleLogo = () => (
 );
 
 function LandingPage({ onLogin }) {
-  const [activeTab, setActiveTab] = useState('tasks');
-  const [typedText, setTypedText] = useState('');
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
-  // Typing effect for the note mockup
   useEffect(() => {
-    if (activeTab !== 'notes') {
-      setTypedText('');
-      return;
-    }
-    const fullText = "Create a roadmap for the Q3 release...\n- Setup Firestore real-time sync listeners\n- Style landing page mockups with HSL gradients\n- Verify OAuth whitelist domains";
-    let index = 0;
-    const interval = setInterval(() => {
-      setTypedText(fullText.slice(0, index + 1));
-      index++;
-      if (index >= fullText.length) clearInterval(interval);
-    }, 40);
-    return () => clearInterval(interval);
-  }, [activeTab]);
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#030712] text-[#f3f4f6] font-sans overflow-x-hidden relative flex flex-col justify-between">
-      {/* Floating background mesh bubbles */}
+    <div className="min-h-screen bg-[#070716] text-[#f3f4f6] font-sans overflow-x-hidden relative flex flex-col justify-between select-none">
+      {/* Dynamic Cursor Spotlight Glow */}
+      <div 
+        className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(139, 92, 246, 0.08), rgba(217, 70, 239, 0.03) 45%, transparent 80%)`
+        }}
+      />
+
+      {/* Floating background mesh bubbles & cosmic effects */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px] animate-float-slow" />
-        <div className="absolute bottom-[10%] right-[-10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px] animate-float-slower" />
-        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-[100px] animate-float-slow" style={{ animationDelay: '2s' }} />
+        {/* Left planet/sun crescent edge */}
+        <div className="absolute top-[15%] left-[-250px] md:left-[-350px] w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full border-r border-violet-500/30 bg-gradient-to-r from-transparent via-[#0f0e26]/30 to-violet-950/15 blur-[1px] shadow-[20px_0_80px_rgba(139,92,246,0.12)] pointer-events-none z-0" />
+        
+        {/* Glowing radial gradients on edges */}
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-600/5 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-indigo-500/5 rounded-full blur-[180px] pointer-events-none" />
+        
+        {/* Sunset Clouds on the right and bottom */}
+        <div className="absolute top-[10%] right-[-15%] w-[450px] h-[600px] bg-gradient-to-br from-indigo-500/10 to-purple-500/15 rounded-full blur-[110px] animate-float-slow pointer-events-none" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[380px] h-[500px] bg-gradient-to-br from-fuchsia-500/8 to-violet-600/10 rounded-full blur-[100px] animate-float-slower pointer-events-none" />
       </div>
 
       {/* Header */}
-      <header className="relative z-10 max-w-7xl mx-auto w-full px-6 py-5 flex items-center justify-between border-b border-slate-900/50">
+      <header className="relative z-10 max-w-7xl mx-auto w-full px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Icons.Tasks size={18} className="text-white" />
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+          <span className="text-xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent tracking-tight">
             TaskTracker
           </span>
         </div>
         <button
           onClick={onLogin}
-          className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-white border border-slate-700/60 rounded-xl bg-slate-900/30 hover:bg-slate-800/40 transition-all duration-200"
+          className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white border border-slate-700/50 hover:border-violet-500/30 rounded-xl bg-slate-900/40 hover:bg-violet-500/10 transition-all duration-300 backdrop-blur-md"
         >
           Sign In
         </button>
       </header>
 
       {/* Hero Section */}
-      <main className="relative z-10 max-w-7xl mx-auto w-full px-6 py-12 md:py-20 flex-1 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+      <main className="relative z-10 max-w-7xl mx-auto w-full px-6 py-8 md:py-16 flex-1 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
         {/* Left Column */}
-        <div className="w-full lg:w-[45%] space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/5 text-indigo-400 text-xs font-medium uppercase tracking-wider mb-2">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" /> New: Firebase Integration
+        <div className="w-full lg:w-[42%] space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/5 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse" /> NEW: FIREBASE INTEGRATION
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight bg-gradient-to-br from-white via-[#f3f4f6] to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
             Track your tasks.<br />
             <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
               Own your progress.
             </span>
           </h1>
-          <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-lg">
+          <p className="text-sm sm:text-base text-slate-400 leading-relaxed max-w-lg">
             A premium personal dashboard combining daily tasks, habit streaks, and markdown notes. Beautifully animated, real-time synchronized, and secured with Google Auth.
           </p>
 
-          {/* Login Button */}
+          {/* Continue with Google button */}
           <div className="pt-4 w-full sm:w-auto">
             <button
               onClick={onLogin}
-              className="group relative flex items-center justify-center w-full sm:w-auto px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 font-semibold rounded-2xl transition-all duration-200 border border-slate-200 shadow-xl shadow-indigo-500/5 active:scale-[0.98]"
+              className="group relative flex items-center justify-center w-full sm:w-auto px-6 py-3.5 bg-slate-950/40 hover:bg-slate-900/60 text-white font-semibold rounded-2xl border border-violet-500/20 hover:border-violet-400/40 transition-all duration-300 active:scale-[0.98] backdrop-blur-md"
             >
               <GoogleLogo />
-              <span className="text-sm font-bold tracking-wide">Continue with Google</span>
-              {/* Pulsing Accent Border */}
-              <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300" />
+              <span className="text-sm font-bold tracking-wide text-slate-200 group-hover:text-white transition-colors">Continue with Google</span>
+              {/* Glowing Ambient Shadow */}
+              <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/25 via-violet-500/30 to-fuchsia-500/25 opacity-60 blur-md group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </button>
           </div>
         </div>
 
-        {/* Right Column: Glassmorphic Dashboard Mockup */}
-        <div className="w-full lg:w-[55%] flex flex-col gap-6 animate-scale-in">
-          {/* Tab Selector */}
-          <div className="glass rounded-2xl p-1.5 flex gap-1 w-full max-w-md mx-auto lg:mx-0">
-            {[
-              { id: 'tasks', label: 'My Tasks', icon: <Icons.Tasks size={14} />, color: 'from-indigo-500 to-indigo-600' },
-              { id: 'tracker', label: 'Monthly Tracker', icon: <Icons.Calendar size={14} />, color: 'from-violet-500 to-violet-600' },
-              { id: 'notes', label: 'Notes Manager', icon: <Icons.Note size={14} />, color: 'from-fuchsia-500 to-fuchsia-600' },
-            ].map(tab => {
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300
-                    ${active 
-                      ? `bg-gradient-to-r ${tab.color} text-white shadow-lg` 
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'}`}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Interactive Mockup Container */}
-          <div className="glass rounded-3xl p-6 shadow-2xl relative border border-slate-800/80 min-h-[360px] flex flex-col justify-between overflow-hidden bg-slate-900/40 backdrop-blur-2xl">
+        {/* Right Column: Dashboard Mockup */}
+        <div className="w-full lg:w-[58%] flex flex-col gap-4 animate-scale-in">
+          {/* Main Preview Window */}
+          <div className="glass rounded-3xl p-6 shadow-2xl relative border border-slate-700/20 bg-slate-900/35 backdrop-blur-3xl">
             {/* Top Mockup Header Bar */}
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500/40" />
-                <div className="w-3 h-3 rounded-full bg-amber-500/40" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500/40" />
+                <div className="w-3 h-3 rounded-full bg-rose-500/60" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/60" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/60" />
               </div>
               <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                Preview Mode
+                PREVIEW MODE
               </div>
             </div>
 
-            {/* Mockup Body Content */}
-            <div className="flex-1 flex flex-col justify-center">
-              {/* TAB 1: Tasks Preview */}
-              {activeTab === 'tasks' && (
-                <div className="space-y-3 animate-fade-in">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Project Tasks</span>
-                    <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full font-medium">3 active</span>
-                  </div>
+            {/* Mockup Body Content (Tasks list matching mockup) */}
+            <div className="space-y-3">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">PROJECT TASKS</span>
+                <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full font-medium">3 active</span>
+              </div>
 
-                  {/* Task 1 */}
-                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-indigo-500">
-                    <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded border border-indigo-500/60 flex items-center justify-center bg-indigo-500/10">
-                        <Icons.Check size={10} className="text-indigo-400 animate-pulse" />
-                      </div>
-                      <span className="text-xs font-medium text-slate-300 strikethrough active">Launch landing page animation</span>
-                    </div>
-                    <span className="text-[9px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded font-mono">Done</span>
+              {/* Task 1 */}
+              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-md bg-[#6366f1]/90 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
                   </div>
-
-                  {/* Task 2 */}
-                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-rose-500">
-                    <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded border border-slate-700" />
-                      <span className="text-xs font-medium text-slate-300">Set Firestore security rules</span>
-                    </div>
-                    <span className="text-[9px] text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded font-mono">Overdue</span>
-                  </div>
-
-                  {/* Task 3 */}
-                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-amber-500">
-                    <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 rounded border border-slate-700" />
-                      <span className="text-xs font-medium text-slate-300">Verify client sign-in callback</span>
-                    </div>
-                    <span className="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-mono">High</span>
-                  </div>
+                  <span className="text-xs font-semibold text-slate-500 line-through decoration-slate-600/50 animate-pulse">Launch landing page animation</span>
                 </div>
-              )}
+                <span className="text-[9px] uppercase font-bold tracking-wider text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full">Done</span>
+              </div>
 
-              {/* TAB 2: Tracker Preview */}
-              {activeTab === 'tracker' && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">June 2026 streaks</span>
-                    <span className="text-[10px] text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full font-medium">84% completion</span>
-                  </div>
-
-                  {/* Calendar Row Mini Preview */}
-                  <div className="grid grid-cols-7 gap-1">
-                    {[22, 23, 24, 25, 26, 27, 28].map((day, i) => {
-                      const complete = i < 5;
-                      return (
-                        <div
-                          key={day}
-                          className={`p-2 rounded-lg text-center border flex flex-col justify-between items-center min-h-[50px]
-                            ${complete 
-                              ? 'border-violet-500/30 bg-violet-500/10' 
-                              : 'border-slate-800 bg-slate-900/20'}`}
-                        >
-                          <span className={`text-[10px] font-semibold ${complete ? 'text-violet-400' : 'text-slate-600'}`}>{day}</span>
-                          <div className={`w-1.5 h-1.5 rounded-full ${complete ? 'bg-violet-400 animate-pulse' : 'bg-slate-800'}`} />
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Progress Row */}
-                  <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/60 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <Icons.Repeat size={14} className="text-violet-400" />
-                      <span className="font-semibold text-slate-300">Habit: Daily Coding Streak</span>
-                    </div>
-                    <div className="text-violet-400 font-bold font-mono">24-Day streak 🔥</div>
-                  </div>
+              {/* Task 2 */}
+              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-md border border-slate-700/80 bg-slate-950/40" />
+                  <span className="text-xs font-semibold text-slate-300">Set Firestore security rules</span>
                 </div>
-              )}
+                <span className="text-[9px] uppercase font-bold tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full">Overdue</span>
+              </div>
 
-              {/* TAB 3: Notes Preview */}
-              {activeTab === 'notes' && (
-                <div className="space-y-3 animate-fade-in flex-1 flex flex-col justify-between min-h-[220px]">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Note Editor</span>
-                    <span className="text-[10px] text-fuchsia-400 bg-fuchsia-500/10 px-2 py-0.5 rounded-full font-medium">Auto-saving</span>
-                  </div>
-
-                  {/* Simulated Notepad body */}
-                  <div className="flex-1 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 font-mono text-[11px] text-slate-300 leading-relaxed min-h-[160px] relative">
-                    <div className="text-slate-400 font-bold border-b border-slate-900 pb-2 mb-2">
-                      # Project Roadmap.md
-                    </div>
-                    <div className="whitespace-pre-line text-slate-300">
-                      {typedText}
-                      <span className="inline-block w-1.5 h-3.5 bg-fuchsia-400 ml-0.5 animate-pulse" />
-                    </div>
-                    <div className="absolute bottom-2 right-3 text-[9px] text-slate-600">
-                      Markdown supported
-                    </div>
-                  </div>
+              {/* Task 3 */}
+              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-md border border-slate-700/80 bg-slate-950/40" />
+                  <span className="text-xs font-semibold text-slate-300">Verify client sign-in callback</span>
                 </div>
-              )}
+                <span className="text-[9px] uppercase font-bold tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">High</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Four Small Stats Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
+            {/* Card 1: Streak */}
+            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Current Streak</span>
+                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
+                </svg>
+              </div>
+              <div className="mt-2 text-lg font-bold text-slate-200">12 days</div>
+              {/* Mini chart path */}
+              <svg className="w-full h-5 mt-1.5 text-purple-500/50" viewBox="0 0 100 30" fill="none">
+                <path d="M0,25 Q15,22 30,15 T60,18 T90,5 T100,2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Card 2: Completed */}
+            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Tasks Completed</span>
+                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+              </div>
+              <div className="mt-2 text-lg font-bold text-slate-200">78%</div>
+              {/* Mini progress bar */}
+              <div className="w-full bg-slate-800/60 rounded-full h-1.5 mt-3 overflow-hidden">
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full" style={{ width: '78%' }} />
+              </div>
+            </div>
+
+            {/* Card 3: Monthly Progress */}
+            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Monthly Progress</span>
+                <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <div className="mt-1 flex flex-col">
+                <span className="text-lg font-bold text-slate-200">+24%</span>
+                <span className="text-[9px] font-medium text-slate-500 tracking-wide uppercase">vs last month</span>
+              </div>
+              {/* Mini chart path */}
+              <svg className="w-full h-5 mt-1.5 text-purple-500/50" viewBox="0 0 100 30" fill="none">
+                <path d="M0,20 Q20,10 40,22 T80,12 T100,5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+
+            {/* Card 4: Total Tasks */}
+            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Total Tasks</span>
+                <svg className="w-4 h-4 text-fuchsia-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="16" y1="13" x2="8" y2="13" />
+                  <line x1="16" y1="17" x2="8" y2="17" />
+                </svg>
+              </div>
+              <div className="mt-2 text-lg font-bold text-slate-200">128</div>
+              <div className="text-[9px] text-slate-500 font-semibold mb-0.5 uppercase tracking-wide">All modules</div>
             </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 max-w-7xl mx-auto w-full px-6 py-8 text-center text-xs text-slate-600 border-t border-slate-900/50">
+      <footer className="relative z-10 max-w-7xl mx-auto w-full px-6 py-6 text-center text-[10px] sm:text-xs text-slate-600">
         <p>© 2026 TaskTracker. Built with React, Tailwind CSS, Recharts, and Google Cloud Firebase.</p>
       </footer>
 
@@ -2790,29 +2783,24 @@ function LandingPage({ onLogin }) {
       <style>{`
         @keyframes floatSlow {
           0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
-          50% { transform: translateY(-30px) scale(1.08) rotate(5deg); }
+          50% { transform: translateY(-20px) scale(1.05) rotate(3deg); }
         }
         @keyframes floatSlower {
           0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
-          50% { transform: translateY(30px) scale(0.92) rotate(-5deg); }
+          50% { transform: translateY(20px) scale(0.95) rotate(-3deg); }
         }
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(15px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
         @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.95); }
+          from { opacity: 0; transform: scale(0.97); }
           to { opacity: 1; transform: scale(1); }
         }
-        .animate-float-slow { animation: floatSlow 12s ease-in-out infinite; }
-        .animate-float-slower { animation: floatSlower 18s ease-in-out infinite; }
-        .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        .animate-scale-in { animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-float-slow { animation: floatSlow 10s ease-in-out infinite; }
+        .animate-float-slower { animation: floatSlower 15s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-scale-in { animation: scaleIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}</style>
     </div>
   );
