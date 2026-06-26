@@ -2556,49 +2556,263 @@ const GoogleLogo = () => (
   </svg>
 );
 
-function LoginScreen({ onLogin }) {
+function LandingPage({ onLogin }) {
+  const [activeTab, setActiveTab] = useState('tasks');
+  const [typedText, setTypedText] = useState('');
+
+  // Typing effect for the note mockup
+  useEffect(() => {
+    if (activeTab !== 'notes') {
+      setTypedText('');
+      return;
+    }
+    const fullText = "Create a roadmap for the Q3 release...\n- Setup Firestore real-time sync listeners\n- Style landing page mockups with HSL gradients\n- Verify OAuth whitelist domains";
+    let index = 0;
+    const interval = setInterval(() => {
+      setTypedText(fullText.slice(0, index + 1));
+      index++;
+      if (index >= fullText.length) clearInterval(interval);
+    }, 40);
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-navy-950 p-4 overflow-hidden">
+    <div className="min-h-screen bg-[#030712] text-[#f3f4f6] font-sans overflow-x-hidden relative flex flex-col justify-between">
       {/* Floating background mesh bubbles */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl animate-float-slower" />
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px] animate-float-slow" />
+        <div className="absolute bottom-[10%] right-[-10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px] animate-float-slower" />
+        <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] bg-sky-500/5 rounded-full blur-[100px] animate-float-slow" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md bg-slate-900/80 backdrop-blur-2xl border border-slate-800/80 rounded-2xl p-8 shadow-2xl animate-fade-in text-center flex flex-col items-center">
-        {/* App Logo */}
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-6">
-          <Icons.Tasks size={32} className="text-white" />
+      {/* Header */}
+      <header className="relative z-10 max-w-7xl mx-auto w-full px-6 py-5 flex items-center justify-between border-b border-slate-900/50">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <Icons.Tasks size={18} className="text-white" />
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+            TaskTracker
+          </span>
         </div>
-
-        <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent mb-2">
-          TaskTracker
-        </h1>
-        <p className="text-sm text-slate-400 mb-8 font-medium">
-          Track your tasks. Own your progress.
-        </p>
-
         <button
           onClick={onLogin}
-          className="flex items-center justify-center w-full px-5 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-semibold rounded-xl transition-all duration-200 border border-slate-200 shadow-md shadow-white/5 active:scale-95"
+          className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-white border border-slate-700/60 rounded-xl bg-slate-900/30 hover:bg-slate-800/40 transition-all duration-200"
         >
-          <GoogleLogo />
-          Continue with Google
+          Sign In
         </button>
-      </div>
-      
-      {/* Inject custom floats into global styles */}
+      </header>
+
+      {/* Hero Section */}
+      <main className="relative z-10 max-w-7xl mx-auto w-full px-6 py-12 md:py-20 flex-1 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        {/* Left Column */}
+        <div className="w-full lg:w-[45%] space-y-6 text-center lg:text-left flex flex-col items-center lg:items-start animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/5 text-indigo-400 text-xs font-medium uppercase tracking-wider mb-2">
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" /> New: Firebase Integration
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight bg-gradient-to-br from-white via-[#f3f4f6] to-slate-400 bg-clip-text text-transparent">
+            Track your tasks.<br />
+            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              Own your progress.
+            </span>
+          </h1>
+          <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-lg">
+            A premium personal dashboard combining daily tasks, habit streaks, and markdown notes. Beautifully animated, real-time synchronized, and secured with Google Auth.
+          </p>
+
+          {/* Login Button */}
+          <div className="pt-4 w-full sm:w-auto">
+            <button
+              onClick={onLogin}
+              className="group relative flex items-center justify-center w-full sm:w-auto px-6 py-4 bg-white hover:bg-slate-50 text-slate-900 font-semibold rounded-2xl transition-all duration-200 border border-slate-200 shadow-xl shadow-indigo-500/5 active:scale-[0.98]"
+            >
+              <GoogleLogo />
+              <span className="text-sm font-bold tracking-wide">Continue with Google</span>
+              {/* Pulsing Accent Border */}
+              <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 opacity-20 blur-md group-hover:opacity-40 transition-opacity duration-300" />
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Glassmorphic Dashboard Mockup */}
+        <div className="w-full lg:w-[55%] flex flex-col gap-6 animate-scale-in">
+          {/* Tab Selector */}
+          <div className="glass rounded-2xl p-1.5 flex gap-1 w-full max-w-md mx-auto lg:mx-0">
+            {[
+              { id: 'tasks', label: 'My Tasks', icon: <Icons.Tasks size={14} />, color: 'from-indigo-500 to-indigo-600' },
+              { id: 'tracker', label: 'Monthly Tracker', icon: <Icons.Calendar size={14} />, color: 'from-violet-500 to-violet-600' },
+              { id: 'notes', label: 'Notes Manager', icon: <Icons.Note size={14} />, color: 'from-fuchsia-500 to-fuchsia-600' },
+            ].map(tab => {
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300
+                    ${active 
+                      ? `bg-gradient-to-r ${tab.color} text-white shadow-lg` 
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'}`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Interactive Mockup Container */}
+          <div className="glass rounded-3xl p-6 shadow-2xl relative border border-slate-800/80 min-h-[360px] flex flex-col justify-between overflow-hidden bg-slate-900/40 backdrop-blur-2xl">
+            {/* Top Mockup Header Bar */}
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500/40" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/40" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/40" />
+              </div>
+              <div className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+                Preview Mode
+              </div>
+            </div>
+
+            {/* Mockup Body Content */}
+            <div className="flex-1 flex flex-col justify-center">
+              {/* TAB 1: Tasks Preview */}
+              {activeTab === 'tasks' && (
+                <div className="space-y-3 animate-fade-in">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Project Tasks</span>
+                    <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full font-medium">3 active</span>
+                  </div>
+
+                  {/* Task 1 */}
+                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-indigo-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-indigo-500/60 flex items-center justify-center bg-indigo-500/10">
+                        <Icons.Check size={10} className="text-indigo-400 animate-pulse" />
+                      </div>
+                      <span className="text-xs font-medium text-slate-300 strikethrough active">Launch landing page animation</span>
+                    </div>
+                    <span className="text-[9px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded font-mono">Done</span>
+                  </div>
+
+                  {/* Task 2 */}
+                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-rose-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-slate-700" />
+                      <span className="text-xs font-medium text-slate-300">Set Firestore security rules</span>
+                    </div>
+                    <span className="text-[9px] text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded font-mono">Overdue</span>
+                  </div>
+
+                  {/* Task 3 */}
+                  <div className="glass rounded-xl p-3 flex items-center justify-between border-l-4 border-amber-500">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 rounded border border-slate-700" />
+                      <span className="text-xs font-medium text-slate-300">Verify client sign-in callback</span>
+                    </div>
+                    <span className="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded font-mono">High</span>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: Tracker Preview */}
+              {activeTab === 'tracker' && (
+                <div className="space-y-4 animate-fade-in">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">June 2026 streaks</span>
+                    <span className="text-[10px] text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded-full font-medium">84% completion</span>
+                  </div>
+
+                  {/* Calendar Row Mini Preview */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {[22, 23, 24, 25, 26, 27, 28].map((day, i) => {
+                      const complete = i < 5;
+                      return (
+                        <div
+                          key={day}
+                          className={`p-2 rounded-lg text-center border flex flex-col justify-between items-center min-h-[50px]
+                            ${complete 
+                              ? 'border-violet-500/30 bg-violet-500/10' 
+                              : 'border-slate-800 bg-slate-900/20'}`}
+                        >
+                          <span className={`text-[10px] font-semibold ${complete ? 'text-violet-400' : 'text-slate-600'}`}>{day}</span>
+                          <div className={`w-1.5 h-1.5 rounded-full ${complete ? 'bg-violet-400 animate-pulse' : 'bg-slate-800'}`} />
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Progress Row */}
+                  <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/60 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <Icons.Repeat size={14} className="text-violet-400" />
+                      <span className="font-semibold text-slate-300">Habit: Daily Coding Streak</span>
+                    </div>
+                    <div className="text-violet-400 font-bold font-mono">24-Day streak 🔥</div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: Notes Preview */}
+              {activeTab === 'notes' && (
+                <div className="space-y-3 animate-fade-in flex-1 flex flex-col justify-between min-h-[220px]">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Note Editor</span>
+                    <span className="text-[10px] text-fuchsia-400 bg-fuchsia-500/10 px-2 py-0.5 rounded-full font-medium">Auto-saving</span>
+                  </div>
+
+                  {/* Simulated Notepad body */}
+                  <div className="flex-1 bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 font-mono text-[11px] text-slate-300 leading-relaxed min-h-[160px] relative">
+                    <div className="text-slate-400 font-bold border-b border-slate-900 pb-2 mb-2">
+                      # Project Roadmap.md
+                    </div>
+                    <div className="whitespace-pre-line text-slate-300">
+                      {typedText}
+                      <span className="inline-block w-1.5 h-3.5 bg-fuchsia-400 ml-0.5 animate-pulse" />
+                    </div>
+                    <div className="absolute bottom-2 right-3 text-[9px] text-slate-600">
+                      Markdown supported
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 max-w-7xl mx-auto w-full px-6 py-8 text-center text-xs text-slate-600 border-t border-slate-900/50">
+        <p>© 2026 TaskTracker. Built with React, Tailwind CSS, Recharts, and Google Cloud Firebase.</p>
+      </footer>
+
+      {/* Embedded Animations CSS */}
       <style>{`
         @keyframes floatSlow {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-20px) scale(1.05); }
+          0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+          50% { transform: translateY(-30px) scale(1.08) rotate(5deg); }
         }
         @keyframes floatSlower {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(20px) scale(0.95); }
+          0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+          50% { transform: translateY(30px) scale(0.92) rotate(-5deg); }
         }
-        .animate-float-slow { animation: floatSlow 8s ease-in-out infinite; }
-        .animate-float-slower { animation: floatSlower 12s ease-in-out infinite; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-float-slow { animation: floatSlow 12s ease-in-out infinite; }
+        .animate-float-slower { animation: floatSlower 18s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-scale-in { animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}</style>
     </div>
   );
@@ -2981,7 +3195,7 @@ export default function App() {
   }
 
   if (!user) {
-    return <LoginScreen onLogin={handleGoogleSignIn} />;
+    return <LandingPage onLogin={handleGoogleSignIn} />;
   }
 
   if (readError) {
