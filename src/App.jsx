@@ -2557,37 +2557,61 @@ const GoogleLogo = () => (
 );
 
 function LandingPage({ onLogin }) {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [mousePos, setMousePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const trailPos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const requestRef = useRef();
 
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+
+    const updatePosition = () => {
+      const dx = mousePos.x - trailPos.current.x;
+      const dy = mousePos.y - trailPos.current.y;
+      
+      trailPos.current.x += dx * 0.085;
+      trailPos.current.y += dy * 0.085;
+
+      document.documentElement.style.setProperty('--mouse-x', `${trailPos.current.x}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${trailPos.current.y}px`);
+
+      requestRef.current = requestAnimationFrame(updatePosition);
+    };
+
+    requestRef.current = requestAnimationFrame(updatePosition);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(requestRef.current);
+    };
+  }, [mousePos]);
 
   return (
-    <div className="min-h-screen bg-[#070716] text-[#f3f4f6] font-sans overflow-x-hidden relative flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#03030b] text-[#f3f4f6] font-sans overflow-x-hidden relative flex flex-col justify-between select-none">
       {/* Dynamic Cursor Spotlight Glow */}
       <div 
         className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(139, 92, 246, 0.08), rgba(217, 70, 239, 0.03) 45%, transparent 80%)`
+          background: `radial-gradient(600px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(139, 92, 246, 0.075), rgba(217, 70, 239, 0.025) 45%, transparent 80%)`
         }}
       />
 
       {/* Floating background mesh bubbles & cosmic effects */}
       <div className="absolute inset-0 overflow-hidden z-0 pointer-events-none">
-        {/* Left planet/sun crescent edge */}
-        <div className="absolute top-[15%] left-[-250px] md:left-[-350px] w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full border-r border-violet-500/30 bg-gradient-to-r from-transparent via-[#0f0e26]/30 to-violet-950/15 blur-[1px] shadow-[20px_0_80px_rgba(139,92,246,0.12)] pointer-events-none z-0" />
+        {/* Outer atmospheric planetary glow */}
+        <div className="absolute top-[10%] left-[-420px] md:left-[-520px] w-[820px] h-[820px] md:w-[1020px] md:h-[1020px] rounded-full bg-violet-600/5 blur-[60px] pointer-events-none z-0" />
+        
+        {/* Left planet crescent edge */}
+        <div className="absolute top-[10%] left-[-400px] md:left-[-500px] w-[800px] h-[800px] md:w-[1000px] md:h-[1000px] rounded-full border-r border-violet-500/35 bg-gradient-to-r from-transparent via-[#08081a]/50 to-[#0e0c24]/30 blur-[1px] shadow-[30px_0_100px_rgba(139,92,246,0.15)] pointer-events-none z-0" />
         
         {/* Glowing radial gradients on edges */}
         <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-violet-600/5 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[700px] h-[700px] bg-indigo-500/5 rounded-full blur-[180px] pointer-events-none" />
         
         {/* Sunset Clouds on the right and bottom */}
-        <div className="absolute top-[10%] right-[-15%] w-[450px] h-[600px] bg-gradient-to-br from-indigo-500/10 to-purple-500/15 rounded-full blur-[110px] animate-float-slow pointer-events-none" />
+        <div className="absolute top-[10%] right-[-15%] w-[450px] h-[600px] bg-gradient-to-br from-indigo-500/8 to-purple-500/12 rounded-full blur-[110px] animate-float-slow pointer-events-none" />
         <div className="absolute bottom-[-10%] right-[-5%] w-[380px] h-[500px] bg-gradient-to-br from-fuchsia-500/8 to-violet-600/10 rounded-full blur-[100px] animate-float-slower pointer-events-none" />
       </div>
 
@@ -2618,9 +2642,9 @@ function LandingPage({ onLogin }) {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-500/30 bg-violet-500/5 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2">
             <span className="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse" /> NEW: FIREBASE INTEGRATION
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] text-white">
             Track your tasks.<br />
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#c084fc] via-[#818cf8] to-[#3b82f6] bg-clip-text text-transparent">
               Own your progress.
             </span>
           </h1>
@@ -2632,12 +2656,12 @@ function LandingPage({ onLogin }) {
           <div className="pt-4 w-full sm:w-auto">
             <button
               onClick={onLogin}
-              className="group relative flex items-center justify-center w-full sm:w-auto px-6 py-3.5 bg-slate-950/40 hover:bg-slate-900/60 text-white font-semibold rounded-2xl border border-violet-500/20 hover:border-violet-400/40 transition-all duration-300 active:scale-[0.98] backdrop-blur-md"
+              className="group relative flex items-center justify-center w-full sm:w-auto px-7 py-3.5 bg-slate-950/50 hover:bg-slate-900/70 text-white font-semibold rounded-2xl border border-violet-500/20 hover:border-violet-400/40 transition-all duration-300 active:scale-[0.98] backdrop-blur-md"
             >
               <GoogleLogo />
               <span className="text-sm font-bold tracking-wide text-slate-200 group-hover:text-white transition-colors">Continue with Google</span>
               {/* Glowing Ambient Shadow */}
-              <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/25 via-violet-500/30 to-fuchsia-500/25 opacity-60 blur-md group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <div className="absolute -inset-[1px] -z-10 rounded-2xl bg-gradient-to-r from-indigo-500/30 via-violet-500/35 to-fuchsia-500/30 opacity-60 blur-md group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </button>
           </div>
         </div>
@@ -2645,7 +2669,7 @@ function LandingPage({ onLogin }) {
         {/* Right Column: Dashboard Mockup */}
         <div className="w-full lg:w-[58%] flex flex-col gap-4 animate-scale-in">
           {/* Main Preview Window */}
-          <div className="glass rounded-3xl p-6 shadow-2xl relative border border-slate-700/20 bg-slate-900/35 backdrop-blur-3xl">
+          <div className="glass glass-hover-spotlight rounded-3xl p-6 shadow-2xl relative border border-slate-700/20 bg-slate-900/35 backdrop-blur-3xl overflow-hidden">
             {/* Top Mockup Header Bar */}
             <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-4 flex-shrink-0">
               <div className="flex items-center gap-2">
@@ -2659,27 +2683,27 @@ function LandingPage({ onLogin }) {
             </div>
 
             {/* Mockup Body Content (Tasks list matching mockup) */}
-            <div className="space-y-3">
+            <div className="space-y-3 relative z-10">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">PROJECT TASKS</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">PROJECT TASKS</span>
                 <span className="text-[10px] text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full font-medium">3 active</span>
               </div>
 
               {/* Task 1 */}
-              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+              <div className="glass glass-hover-spotlight rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
                 <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-md bg-[#6366f1]/90 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <div className="w-5 h-5 rounded-md bg-[#6366f1] flex items-center justify-center shadow-lg shadow-indigo-500/20">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-white">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   </div>
-                  <span className="text-xs font-semibold text-slate-500 line-through decoration-slate-600/50 animate-pulse">Launch landing page animation</span>
+                  <span className="text-xs font-semibold text-slate-500 line-through decoration-slate-600/50">Launch landing page animation</span>
                 </div>
                 <span className="text-[9px] uppercase font-bold tracking-wider text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full">Done</span>
               </div>
 
               {/* Task 2 */}
-              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+              <div className="glass glass-hover-spotlight rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
                 <div className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-md border border-slate-700/80 bg-slate-950/40" />
                   <span className="text-xs font-semibold text-slate-300">Set Firestore security rules</span>
@@ -2688,7 +2712,7 @@ function LandingPage({ onLogin }) {
               </div>
 
               {/* Task 3 */}
-              <div className="glass rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
+              <div className="glass glass-hover-spotlight rounded-2xl p-4 flex items-center justify-between bg-slate-900/40 border border-slate-700/25">
                 <div className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-md border border-slate-700/80 bg-slate-950/40" />
                   <span className="text-xs font-semibold text-slate-300">Verify client sign-in callback</span>
@@ -2701,23 +2725,23 @@ function LandingPage({ onLogin }) {
           {/* Four Small Stats Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
             {/* Card 1: Streak */}
-            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
-              <div className="flex items-center justify-between">
+            <div className="glass glass-hover-spotlight rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl overflow-hidden">
+              <div className="flex items-center justify-between relative z-10">
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Current Streak</span>
                 <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
                 </svg>
               </div>
-              <div className="mt-2 text-lg font-bold text-slate-200">12 days</div>
+              <div className="mt-2 text-lg font-bold text-slate-200 relative z-10">12 days</div>
               {/* Mini chart path */}
-              <svg className="w-full h-5 mt-1.5 text-purple-500/50" viewBox="0 0 100 30" fill="none">
+              <svg className="w-full h-5 mt-1.5 text-purple-500/50 relative z-10" viewBox="0 0 100 30" fill="none">
                 <path d="M0,25 Q15,22 30,15 T60,18 T90,5 T100,2" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>
 
             {/* Card 2: Completed */}
-            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
-              <div className="flex items-center justify-between">
+            <div className="glass glass-hover-spotlight rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl overflow-hidden">
+              <div className="flex items-center justify-between relative z-10">
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Tasks Completed</span>
                 <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <line x1="8" y1="6" x2="21" y2="6" />
@@ -2728,16 +2752,16 @@ function LandingPage({ onLogin }) {
                   <line x1="3" y1="18" x2="3.01" y2="18" />
                 </svg>
               </div>
-              <div className="mt-2 text-lg font-bold text-slate-200">78%</div>
+              <div className="mt-2 text-lg font-bold text-slate-200 relative z-10">78%</div>
               {/* Mini progress bar */}
-              <div className="w-full bg-slate-800/60 rounded-full h-1.5 mt-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-1.5 rounded-full" style={{ width: '78%' }} />
+              <div className="w-full bg-slate-800/60 rounded-full h-1.5 mt-3 overflow-hidden relative z-10">
+                <div className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] h-1.5 rounded-full" style={{ width: '78%' }} />
               </div>
             </div>
 
             {/* Card 3: Monthly Progress */}
-            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
-              <div className="flex items-center justify-between">
+            <div className="glass glass-hover-spotlight rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl overflow-hidden">
+              <div className="flex items-center justify-between relative z-10">
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Monthly Progress</span>
                 <svg className="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -2746,19 +2770,19 @@ function LandingPage({ onLogin }) {
                   <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
               </div>
-              <div className="mt-1 flex flex-col">
-                <span className="text-lg font-bold text-slate-200">+24%</span>
+              <div className="mt-1 flex flex-col relative z-10">
+                <span className="text-lg font-bold text-slate-200 relative z-10">+24%</span>
                 <span className="text-[9px] font-medium text-slate-500 tracking-wide uppercase">vs last month</span>
               </div>
               {/* Mini chart path */}
-              <svg className="w-full h-5 mt-1.5 text-purple-500/50" viewBox="0 0 100 30" fill="none">
+              <svg className="w-full h-5 mt-1.5 text-purple-500/50 relative z-10" viewBox="0 0 100 30" fill="none">
                 <path d="M0,20 Q20,10 40,22 T80,12 T100,5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
             </div>
 
             {/* Card 4: Total Tasks */}
-            <div className="glass rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl">
-              <div className="flex items-center justify-between">
+            <div className="glass glass-hover-spotlight rounded-2xl p-3.5 bg-slate-900/35 border border-slate-700/20 flex flex-col justify-between min-h-[105px] backdrop-blur-3xl overflow-hidden">
+              <div className="flex items-center justify-between relative z-10">
                 <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Total Tasks</span>
                 <svg className="w-4 h-4 text-fuchsia-400" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -2767,8 +2791,8 @@ function LandingPage({ onLogin }) {
                   <line x1="16" y1="17" x2="8" y2="17" />
                 </svg>
               </div>
-              <div className="mt-2 text-lg font-bold text-slate-200">128</div>
-              <div className="text-[9px] text-slate-500 font-semibold mb-0.5 uppercase tracking-wide">All modules</div>
+              <div className="mt-2 text-lg font-bold text-slate-200 relative z-10">128</div>
+              <div className="text-[9px] text-slate-500 font-semibold mb-0.5 uppercase tracking-wide relative z-10">All modules</div>
             </div>
           </div>
         </div>
