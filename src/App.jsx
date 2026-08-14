@@ -14,6 +14,10 @@ import {
   ResponsiveContainer, ReferenceLine, Cell, Legend
 } from 'recharts';
 import { auth, provider, db } from './firebase';
+import { GATE_SYLLABUS } from './gateSyllabus';
+import GateDashboard from './components/GateDashboard';
+import GateSyllabus from './components/GateSyllabus';
+import GateStudyPortal from './components/GateStudyPortal';
 import {
   onAuthStateChanged,
   signInWithPopup,
@@ -142,6 +146,32 @@ const Icons = {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
       <circle cx="8" cy="14" r="1" fill="currentColor" /><circle cx="12" cy="14" r="1" fill="currentColor" /><circle cx="16" cy="14" r="1" fill="currentColor" /><circle cx="8" cy="18" r="1" fill="currentColor" /><circle cx="12" cy="18" r="1" fill="currentColor" />
+    </svg>
+  ),
+  GraduationCap: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+    </svg>
+  ),
+  BookOpen: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  ),
+  Brain: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1 0-3.12 3 3 0 0 1 0-4.88 2.5 2.5 0 0 1 0-3.12A2.5 2.5 0 0 1 9.5 2z" />
+      <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 0-3.12 3 3 0 0 0 0-4.88 2.5 2.5 0 0 0 0-3.12A2.5 2.5 0 0 0 14.5 2z" />
+    </svg>
+  ),
+  Dashboard: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" />
+    </svg>
+  ),
+  BarChart: ({ size = 20 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
     </svg>
   ),
 };
@@ -363,9 +393,12 @@ function ProgressMessage({ pct, monthly = false, monthIdx = 0 }) {
 
 function Sidebar({ activeModule, setActiveModule, collapsed, setCollapsed, user, onSignOut }) {
   const navItems = [
-    { id: 'tasks', label: 'My Tasks', icon: <Icons.Tasks size={22} />, accent: 'indigo' },
-    { id: 'tracker', label: 'Monthly Tracker', icon: <Icons.Calendar size={22} />, accent: 'violet' },
-    { id: 'notes', label: 'Notes', icon: <Icons.Note size={22} />, accent: 'amber' },
+    { id: 'gate-dashboard', label: 'GATE Dashboard', icon: <Icons.Dashboard size={22} />, accent: 'violet' },
+    { id: 'gate-syllabus', label: 'Syllabus & Lectures', icon: <Icons.BookOpen size={22} />, accent: 'indigo' },
+    { id: 'gate-study', label: 'GATE Study Portal', icon: <Icons.GraduationCap size={22} />, accent: 'emerald' },
+    { id: 'tasks', label: 'My Tasks & Cal', icon: <Icons.Tasks size={22} />, accent: 'amber' },
+    { id: 'tracker', label: 'Routine Tracker', icon: <Icons.Calendar size={22} />, accent: 'fuchsia' },
+    { id: 'notes', label: 'Notes Database', icon: <Icons.Note size={22} />, accent: 'slate' },
   ];
 
   return (
@@ -387,11 +420,11 @@ function Sidebar({ activeModule, setActiveModule, collapsed, setCollapsed, user,
         {/* Logo / Header */}
         <div className={`flex items-center h-16 border-b border-slate-700/50 px-4 ${collapsed ? 'justify-center' : 'gap-3'}`}>
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
-            <Icons.Tasks size={16} />
+            <Icons.GraduationCap size={18} />
           </div>
           {!collapsed && (
-            <span className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap">
-              TaskTracker
+            <span className="text-sm font-extrabold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent whitespace-nowrap">
+              GATE 2027 TRACKER
             </span>
           )}
         </div>
@@ -439,13 +472,16 @@ function Sidebar({ activeModule, setActiveModule, collapsed, setCollapsed, user,
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 py-4 px-2 space-y-1">
+        <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
           {navItems.map(item => {
             const isActive = activeModule === item.id;
             const accentMap = {
               indigo: isActive ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
               violet: isActive ? 'bg-violet-500/20 text-violet-400 border-violet-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
               amber: isActive ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
+              emerald: isActive ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
+              fuchsia: isActive ? 'bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
+              slate: isActive ? 'bg-slate-500/20 text-slate-400 border-slate-500/50' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200 border-transparent',
             };
             return (
               <button
@@ -457,7 +493,7 @@ function Sidebar({ activeModule, setActiveModule, collapsed, setCollapsed, user,
                 title={collapsed ? item.label : undefined}
               >
                 <span className="flex-shrink-0">{item.icon}</span>
-                {!collapsed && <span className="font-medium text-sm">{item.label}</span>}
+                {!collapsed && <span className="font-medium text-xs whitespace-nowrap">{item.label}</span>}
               </button>
             );
           })}
@@ -2884,7 +2920,7 @@ function NotesSkeleton() {
 // ============================================================
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState('tasks');
+  const [activeModule, setActiveModule] = useState('gate-dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(window.innerWidth < 1024);
 
   const [user, setUser] = useState(null);
@@ -2900,6 +2936,14 @@ export default function App() {
   const [completions, setCompletions] = useState({});
   const [notes, setNotes] = useState([]);
   const [prefilledNote, setPrefilledNote] = useState(null);
+
+  // GATE Tracker States
+  const [pyqSessions, setPyqSessions] = useState([]);
+  const [testAttempts, setTestAttempts] = useState([]);
+  const [mistakes, setMistakes] = useState([]);
+  const [recallCards, setRecallCards] = useState([]);
+  const [weeklyReviews, setWeeklyReviews] = useState([]);
+  const [strictSyllabusMode, setStrictSyllabusMode] = useState(true);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -2928,6 +2972,11 @@ export default function App() {
       setOverrides({});
       setCompletions({});
       setNotes([]);
+      setPyqSessions([]);
+      setTestAttempts([]);
+      setMistakes([]);
+      setRecallCards([]);
+      setWeeklyReviews([]);
       setLoadingData(false);
       setReadError(false);
       return;
@@ -2938,6 +2987,11 @@ export default function App() {
 
     let unsubTasks = null;
     let unsubNotes = null;
+    let unsubPyqs = null;
+    let unsubTests = null;
+    let unsubMistakes = null;
+    let unsubRecall = null;
+    let unsubReviews = null;
 
     const loadData = async () => {
       try {
@@ -2991,6 +3045,41 @@ export default function App() {
           showToast("Failed to sync notes");
         });
 
+        // 6. Real-time PYQ sessions sync
+        unsubPyqs = onSnapshot(collection(db, 'users', uid, 'pyq_sessions'), (snap) => {
+          const loaded = [];
+          snap.forEach(doc => loaded.push(doc.data()));
+          setPyqSessions(loaded);
+        }, (err) => console.error("PYQ sync failed:", err));
+
+        // 7. Real-time test attempts sync
+        unsubTests = onSnapshot(collection(db, 'users', uid, 'test_attempts'), (snap) => {
+          const loaded = [];
+          snap.forEach(doc => loaded.push(doc.data()));
+          setTestAttempts(loaded);
+        }, (err) => console.error("Tests sync failed:", err));
+
+        // 8. Real-time mistakes sync
+        unsubMistakes = onSnapshot(collection(db, 'users', uid, 'mistakes'), (snap) => {
+          const loaded = [];
+          snap.forEach(doc => loaded.push(doc.data()));
+          setMistakes(loaded);
+        }, (err) => console.error("Mistakes sync failed:", err));
+
+        // 9. Real-time recall cards sync
+        unsubRecall = onSnapshot(collection(db, 'users', uid, 'recall_cards'), (snap) => {
+          const loaded = [];
+          snap.forEach(doc => loaded.push(doc.data()));
+          setRecallCards(loaded);
+        }, (err) => console.error("Recall cards sync failed:", err));
+
+        // 10. Real-time weekly reviews sync
+        unsubReviews = onSnapshot(collection(db, 'users', uid, 'weekly_reviews'), (snap) => {
+          const loaded = [];
+          snap.forEach(doc => loaded.push(doc.data()));
+          setWeeklyReviews(loaded);
+        }, (err) => console.error("Weekly reviews sync failed:", err));
+
         setLoadingData(false);
       } catch (err) {
         console.error("Firestore loading error:", err);
@@ -3004,6 +3093,11 @@ export default function App() {
     return () => {
       if (unsubTasks) unsubTasks();
       if (unsubNotes) unsubNotes();
+      if (unsubPyqs) unsubPyqs();
+      if (unsubTests) unsubTests();
+      if (unsubMistakes) unsubMistakes();
+      if (unsubRecall) unsubRecall();
+      if (unsubReviews) unsubReviews();
     };
   }, [user]);
 
@@ -3191,6 +3285,174 @@ export default function App() {
     }
   };
 
+  // --- GATE DATABASE OPERATIONS ---
+
+  const savePyqSession = async (session) => {
+    setPyqSessions(prev => {
+      const idx = prev.findIndex(p => p.id === session.id);
+      return idx > -1 ? prev.map(p => p.id === session.id ? session : p) : [session, ...prev];
+    });
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'pyq_sessions', session.id), session, { merge: true });
+    } catch (err) {
+      console.error("Firestore savePyqSession error:", err);
+      showToast("Failed to save PYQ session");
+    }
+  };
+
+  const deletePyqSession = async (id) => {
+    setPyqSessions(prev => prev.filter(p => p.id !== id));
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'pyq_sessions', id));
+    } catch (err) {
+      console.error("Firestore deletePyqSession error:", err);
+      showToast("Failed to delete PYQ session");
+    }
+  };
+
+  const saveTestAttempt = async (attempt) => {
+    setTestAttempts(prev => {
+      const idx = prev.findIndex(t => t.id === attempt.id);
+      return idx > -1 ? prev.map(t => t.id === attempt.id ? attempt : t) : [attempt, ...prev];
+    });
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'test_attempts', attempt.id), attempt, { merge: true });
+    } catch (err) {
+      console.error("Firestore saveTestAttempt error:", err);
+      showToast("Failed to save test attempt");
+    }
+  };
+
+  const deleteTestAttempt = async (id) => {
+    setTestAttempts(prev => prev.filter(t => t.id !== id));
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'test_attempts', id));
+    } catch (err) {
+      console.error("Firestore deleteTestAttempt error:", err);
+      showToast("Failed to delete test attempt");
+    }
+  };
+
+  const saveMistake = async (mistake) => {
+    setMistakes(prev => {
+      const idx = prev.findIndex(m => m.id === mistake.id);
+      return idx > -1 ? prev.map(m => m.id === mistake.id ? mistake : m) : [mistake, ...prev];
+    });
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'mistakes', mistake.id), mistake, { merge: true });
+    } catch (err) {
+      console.error("Firestore saveMistake error:", err);
+      showToast("Failed to save mistake");
+    }
+  };
+
+  const deleteMistake = async (id) => {
+    setMistakes(prev => prev.filter(m => m.id !== id));
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'mistakes', id));
+    } catch (err) {
+      console.error("Firestore deleteMistake error:", err);
+      showToast("Failed to delete mistake");
+    }
+  };
+
+  const saveRecallCard = async (card) => {
+    setRecallCards(prev => {
+      const idx = prev.findIndex(c => c.id === card.id);
+      return idx > -1 ? prev.map(c => c.id === card.id ? card : c) : [card, ...prev];
+    });
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'recall_cards', card.id), card, { merge: true });
+    } catch (err) {
+      console.error("Firestore saveRecallCard error:", err);
+      showToast("Failed to save recall card");
+    }
+  };
+
+  const deleteRecallCard = async (id) => {
+    setRecallCards(prev => prev.filter(c => c.id !== id));
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'recall_cards', id));
+    } catch (err) {
+      console.error("Firestore deleteRecallCard error:", err);
+      showToast("Failed to delete recall card");
+    }
+  };
+
+  const saveWeeklyReview = async (review) => {
+    setWeeklyReviews(prev => {
+      const idx = prev.findIndex(w => w.id === review.id);
+      return idx > -1 ? prev.map(w => w.id === review.id ? review : w) : [review, ...prev];
+    });
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'weekly_reviews', review.id), review, { merge: true });
+    } catch (err) {
+      console.error("Firestore saveWeeklyReview error:", err);
+      showToast("Failed to save weekly review");
+    }
+  };
+
+  // Generate 5 spaced revision tasks automatically
+  const generateSpacedRevisions = async (subjectId, topicId, topicName) => {
+    const todayStr = today();
+    
+    // R1: +1 day
+    const d1 = new Date();
+    d1.setDate(d1.getDate() + 1);
+    const r1Date = fmtDate(d1);
+
+    // R2: +7 days
+    const d2 = new Date();
+    d2.setDate(d2.getDate() + 7);
+    const r2Date = fmtDate(d2);
+
+    // R3: +21 days
+    const d3 = new Date();
+    d3.setDate(d3.getDate() + 21);
+    const r3Date = fmtDate(d3);
+
+    // R4: Subject completion or end date
+    const subj = GATE_SYLLABUS.find(s => s.id === subjectId);
+    const r4Date = subj ? subj.timeline.end : todayStr;
+
+    // R5: January final revision
+    const r5Date = '2027-01-22';
+
+    const revisionIntervals = [
+      { type: 'R1 (1 Day)', date: r1Date },
+      { type: 'R2 (7 Days)', date: r2Date },
+      { type: 'R3 (21 Days)', date: r3Date },
+      { type: 'R4 (Subject End)', date: r4Date },
+      { type: 'R5 (Final)', date: r5Date }
+    ];
+
+    try {
+      for (let r of revisionIntervals) {
+        const revId = `rev-${topicId}-${r.type.replace(/\s+/g, '')}-${uid()}`;
+        const revTask = {
+          id: revId,
+          title: `Revise: ${topicName} [${r.type}]`,
+          subjectId: subjectId,
+          topicId: topicId,
+          type: 'revision',
+          date: r.date,
+          priority: 'Medium',
+          status: 'Pending',
+          plannedMinutes: 30,
+          actualMinutes: 0,
+          note: `Auto-generated spaced revision for ${topicName}`,
+          completedAt: null,
+          category: 'GATE'
+        };
+        await saveMyTask(revTask);
+      }
+      showToast(`Scheduled 5 Spaced Revisions for ${topicName}`);
+    } catch (err) {
+      console.error("Spaced revision generation failed:", err);
+      showToast("Error generating revisions");
+    }
+  };
+
   // Handle responsive sidebar
   useEffect(() => {
     const handleResize = () => {
@@ -3235,7 +3497,7 @@ export default function App() {
           <Icons.Menu />
         </button>
         <span className="ml-3 text-lg font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-          TaskTracker
+          GATE 2027 CS Prep
         </span>
       </div>
 
@@ -3249,9 +3511,62 @@ export default function App() {
               {activeModule === 'tasks' && <MyTasksSkeleton />}
               {activeModule === 'tracker' && <MonthlyTrackerSkeleton />}
               {activeModule === 'notes' && <NotesSkeleton />}
+              {activeModule.startsWith('gate-') && <MyTasksSkeleton />}
             </>
           ) : (
             <>
+              {activeModule === 'gate-dashboard' && (
+                <GateDashboard
+                  tasks={tasks}
+                  saveTask={saveMyTask}
+                  pyqSessions={pyqSessions}
+                  testAttempts={testAttempts}
+                  mistakes={mistakes}
+                  recallCards={recallCards}
+                  weeklyReviews={weeklyReviews}
+                  saveWeeklyReview={saveWeeklyReview}
+                  strictSyllabusMode={strictSyllabusMode}
+                  setStrictSyllabusMode={setStrictSyllabusMode}
+                  user={user}
+                  showToast={showToast}
+                  syllabus={GATE_SYLLABUS}
+                />
+              )}
+              {activeModule === 'gate-syllabus' && (
+                <GateSyllabus
+                  tasks={tasks}
+                  saveTask={saveMyTask}
+                  pyqSessions={pyqSessions}
+                  mistakes={mistakes}
+                  notes={notes}
+                  onOpenInNotesPage={(date, taskId, body) => {
+                    setPrefilledNote({ date, taskId, body });
+                    setActiveModule('notes');
+                  }}
+                  syllabus={GATE_SYLLABUS}
+                  generateSpacedRevisions={generateSpacedRevisions}
+                  showToast={showToast}
+                />
+              )}
+              {activeModule === 'gate-study' && (
+                <GateStudyPortal
+                  tasks={tasks}
+                  pyqSessions={pyqSessions}
+                  savePyqSession={savePyqSession}
+                  deletePyqSession={deletePyqSession}
+                  testAttempts={testAttempts}
+                  saveTestAttempt={saveTestAttempt}
+                  deleteTestAttempt={deleteTestAttempt}
+                  mistakes={mistakes}
+                  saveMistake={saveMistake}
+                  deleteMistake={deleteMistake}
+                  recallCards={recallCards}
+                  saveRecallCard={saveRecallCard}
+                  deleteRecallCard={deleteRecallCard}
+                  syllabus={GATE_SYLLABUS}
+                  showToast={showToast}
+                />
+              )}
               {activeModule === 'tasks' && (
                 <MyTasks
                   tasks={tasks}
