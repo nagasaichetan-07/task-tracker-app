@@ -517,12 +517,12 @@ function Sidebar({ activeModule, setActiveModule, collapsed, setCollapsed, user,
 // ============================================================
 
 /** Task Form Modal */
-function TaskFormModal({ task, onSave, onClose }) {
+function TaskFormModal({ task, onSave, onClose, prefillDate }) {
   const [form, setForm] = useState({
     name: task?.name || '',
     description: task?.description || '',
     priority: task?.priority || 'Medium',
-    dueDate: task?.dueDate || today(),
+    dueDate: task?.dueDate || prefillDate || today(),
     status: task?.status || 'Pending',
   });
 
@@ -721,17 +721,354 @@ function TaskCard({ task, onToggle, onEdit, onDelete }) {
   );
 }
 
-/** My Tasks Module */
+/** Task Calendar View */
+function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
+  const [calYear, setCalYear] = useState(new Date().getFullYear());
+  const [calMonth, setCalMonth] = useState(new Date().getMonth());
+  const [selectedDate, setSelectedDate] = useState(today());
+
+  const calDayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  // Build task map: dateStr -> tasks[]
+  const tasksByDate = useMemo(() => {
+    const map = {};
+    tasks.forEach(t => {
+      if (!t.dueDate) return;
+      if (!map[t.dueDate]) map[t.dueDate] = [];
+      map[t.dueDate].push(t);
+    });
+    return map;
+  }, [tasks]);
+
+  // Calendar grid cells
+  const calendarCells = useMemo(() => {
+    const totalDays = daysInMonth(calYear, calMonth);
+    let startDay = firstDayOfMonth(calYear, calMonth); // 0=Sun
+    startDay = startDay === 0 ? 6 : startDay - 1; // Convert to Mon=0
+    const cells = [];
+    // Leading blanks
+    for (let i = 0; i < startDay; i++) cells.push(null);
+    // Day cells
+    for (let d = 1; d <= totalDays; d++) cells.push(d);
+    // Trailing blanks to fill last row
+    while (cells.length % 7 !== 0) cells.push(null);
+    return cells;
+  }, [calYear, calMonth]);
+
+  const goToPrevMonth = () => {
+    const pm = prevMonth(calYear, calMonth);
+    setCalYear(pm.year);
+    setCalMonth(pm.month);
+  };
+
+  const goToNextMonth = () => {
+    const nm = nextMonth(calYear, calMonth);
+    setCalYear(nm.year);
+    setCalMonth(nm.month);
+  };
+
+  const goToToday = () => {
+    const now = new Date();
+    setCalYear(now.getFullYear());
+    setCalMonth(now.getMonth());
+    setSelectedDate(today());
+  };
+
+  const handleCellClick = (day) => {
+    if (!day) return;
+    const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    setSelectedDate(dateStr);
+  };
+
+  const selectedTasks = useMemo(() => {
+    return tasksByDate[selectedDate] || [];
+  }, [tasksByDate, selectedDate]);
+
+  const selectedActiveTasks = selectedTasks.filter(t => t.status !== 'Done');
+  const selectedDoneTasks = selectedTasks.filter(t => t.status === 'Done');
+
+  // Stats for selected month
+  const monthStats = useMemo(() => {
+    const mk = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
+    let total = 0, done = 0, overdue = 0;
+    tasks.forEach(t => {
+      if (t.dueDate && t.dueDate.startsWith(mk)) {
+        total++;
+        if (t.status === 'Done') done++;
+        else if (isPast(t.dueDate)) overdue++;
+      }
+    });
+    return { total, done, overdue, pending: total - done - overdue };
+  }, [tasks, calYear, calMonth]);
+
+  return (
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-fade-in">
+      {/* Calendar Grid */}
+      <div className="xl:col-span-2 glass rounded-2xl p-5">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold text-white">
+              {monthName(calMonth)} {calYear}
+            </h2>
+            <button
+              onClick={goToToday}
+              className="text-[10px] uppercase font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/20 transition-all duration-200"
+            >
+              Today
+            </button>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goToPrevMonth}
+              className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-all duration-200"
+            >
+              <Icons.ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={goToNextMonth}
+              className="p-2 rounded-lg hover:bg-slate-700/50 text-slate-400 hover:text-white transition-all duration-200"
+            >
+              <Icons.ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Month Stats Row */}
+        <div className="grid grid-cols-4 gap-3 mb-5">
+          {[
+            { label: 'Total', value: monthStats.total, color: 'text-slate-300', bg: 'bg-slate-500/10', border: 'border-slate-500/20' },
+            { label: 'Done', value: monthStats.done, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+            { label: 'Pending', value: monthStats.pending, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+            { label: 'Overdue', value: monthStats.overdue, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20' },
+          ].map(s => (
+            <div key={s.label} className={`${s.bg} border ${s.border} rounded-xl px-3 py-2.5 text-center`}>
+              <div className={`text-lg font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-[10px] text-slate-500 uppercase font-medium tracking-wider">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Day Headers */}
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {calDayNames.map(d => (
+            <div key={d} className="text-center text-[10px] uppercase font-semibold text-slate-500 py-2 tracking-wider">
+              {d}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar Cells */}
+        <div className="grid grid-cols-7 gap-1">
+          {calendarCells.map((day, idx) => {
+            if (day === null) return <div key={`blank-${idx}`} className="aspect-square" />;
+
+            const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dayTasks = tasksByDate[dateStr] || [];
+            const isSelected = dateStr === selectedDate;
+            const isTodayDate = dateStr === today();
+            const isPastDate = dateStr < today();
+            const hasOverdue = dayTasks.some(t => t.status !== 'Done' && isPast(t.dueDate));
+            const allDone = dayTasks.length > 0 && dayTasks.every(t => t.status === 'Done');
+            const highPriority = dayTasks.some(t => t.priority === 'High' && t.status !== 'Done');
+
+            return (
+              <button
+                key={dateStr}
+                onClick={() => handleCellClick(day)}
+                className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 relative group border
+                  ${isSelected
+                    ? 'bg-indigo-500/25 border-indigo-500/60 ring-1 ring-indigo-500/30 shadow-lg shadow-indigo-500/10'
+                    : 'border-transparent hover:bg-slate-700/40 hover:border-slate-600/30'}
+                  ${isTodayDate && !isSelected ? 'border-amber-500/40 bg-amber-500/5' : ''}`}
+              >
+                {/* Day Number */}
+                <span className={`text-sm font-semibold leading-none
+                  ${isSelected ? 'text-indigo-300' : ''}
+                  ${isTodayDate && !isSelected ? 'text-amber-400' : ''}
+                  ${!isSelected && !isTodayDate && isPastDate ? 'text-slate-600' : ''}
+                  ${!isSelected && !isTodayDate && !isPastDate ? 'text-slate-300' : ''}`}
+                >
+                  {day}
+                </span>
+
+                {/* Task indicators */}
+                {dayTasks.length > 0 && (
+                  <div className="flex items-center gap-[3px] mt-0.5">
+                    {allDone ? (
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    ) : hasOverdue ? (
+                      <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+                    ) : highPriority ? (
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    )}
+                    {dayTasks.length > 1 && (
+                      <span className={`text-[8px] font-bold leading-none
+                        ${allDone ? 'text-emerald-500' : hasOverdue ? 'text-rose-500' : 'text-indigo-500'}`}
+                      >
+                        {dayTasks.length}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Today indicator ring */}
+                {isTodayDate && (
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 border border-slate-800" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Calendar Legend */}
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-slate-700/30">
+          {[
+            { color: 'bg-indigo-400', label: 'Tasks' },
+            { color: 'bg-emerald-400', label: 'All Done' },
+            { color: 'bg-amber-400', label: 'High Priority' },
+            { color: 'bg-rose-400', label: 'Overdue' },
+          ].map(l => (
+            <div key={l.label} className="flex items-center gap-1.5">
+              <div className={`w-2 h-2 rounded-full ${l.color}`} />
+              <span className="text-[10px] text-slate-500">{l.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Selected Day Panel */}
+      <div className="xl:col-span-1 space-y-4">
+        {/* Selected Date Header */}
+        <div className="glass rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-base font-bold text-white">
+              {fmtReadable(selectedDate)}
+            </h3>
+            {isToday(selectedDate) && (
+              <span className="text-[9px] uppercase font-bold text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full">Today</span>
+            )}
+          </div>
+          <p className="text-xs text-slate-500">
+            {selectedTasks.length} task{selectedTasks.length !== 1 ? 's' : ''} scheduled
+            {selectedActiveTasks.length > 0 && (
+              <span className="text-amber-400"> · {selectedActiveTasks.length} active</span>
+            )}
+          </p>
+
+          {/* Quick add button */}
+          <button
+            onClick={() => onDateClick(selectedDate)}
+            className="w-full mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300 transition-all duration-200 text-xs font-medium"
+          >
+            <Icons.Plus size={14} /> Add task for this date
+          </button>
+        </div>
+
+        {/* Task List for Selected Date */}
+        {selectedTasks.length === 0 ? (
+          <div className="glass rounded-2xl p-6 text-center">
+            <div className="text-slate-600 mb-2">
+              <Icons.Calendar size={32} />
+            </div>
+            <p className="text-sm text-slate-500">No tasks on this date</p>
+            <p className="text-[11px] text-slate-600 mt-1">Click the button above to add one</p>
+          </div>
+        ) : (
+          <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto pr-1 custom-scrollbar">
+            {/* Active Tasks */}
+            {selectedActiveTasks.map(task => {
+              const isOverdue = task.status !== 'Done' && isPast(task.dueDate);
+              const displayStatus = isOverdue ? 'Overdue' : task.status;
+              const sc = statusColors[displayStatus];
+              const pc = priorityColors[task.priority];
+              return (
+                <div
+                  key={task.id}
+                  className={`glass rounded-xl p-3.5 transition-all duration-200 group
+                    ${isOverdue ? 'border-rose-500/30 bg-rose-500/5' : ''}`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    <button
+                      onClick={() => onToggle(task.id)}
+                      className="mt-0.5 w-4 h-4 rounded border-2 border-slate-500 hover:border-indigo-400 flex items-center justify-center flex-shrink-0 transition-all duration-200"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{task.name}</p>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <PillBadge label={displayStatus} colorClass={`${sc.bg} ${sc.text}`} />
+                        <PillBadge label={task.priority} colorClass={`${pc.bg} ${pc.text}`} />
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => onEdit(task)} className="p-1 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-indigo-400 transition-all" title="Edit">
+                        <Icons.Edit size={13} />
+                      </button>
+                      <button onClick={() => onDelete(task.id)} className="p-1 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-rose-400 transition-all" title="Delete">
+                        <Icons.Trash size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Completed Tasks */}
+            {selectedDoneTasks.map(task => (
+              <div
+                key={task.id}
+                className="glass rounded-xl p-3.5 opacity-60 transition-all duration-200 group"
+              >
+                <div className="flex items-start gap-2.5">
+                  <button
+                    onClick={() => onToggle(task.id)}
+                    className="mt-0.5 w-4 h-4 rounded border-2 bg-emerald-500 border-emerald-500 flex items-center justify-center flex-shrink-0"
+                  >
+                    <Icons.Check size={10} />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-500 line-through truncate">{task.name}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <PillBadge label="Done" colorClass="bg-emerald-500/20 text-emerald-400" />
+                    </div>
+                  </div>
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => onDelete(task.id)} className="p-1 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-rose-400 transition-all" title="Delete">
+                      <Icons.Trash size={13} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** My Tasks & Calendar Module */
 function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [filter, setFilter] = useState({ status: 'All', priority: 'All', search: '' });
   const [sortBy, setSortBy] = useState('dueDate');
   const [showCompleted, setShowCompleted] = useState(true);
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
+  const [prefillDate, setPrefillDate] = useState(null);
 
   const handleSaveTask = (task) => {
     saveTask(task);
     setEditingTask(null);
+    setPrefillDate(null);
+  };
+
+  const handleCalendarDateClick = (dateStr) => {
+    setPrefillDate(dateStr);
+    setEditingTask(null);
+    setShowForm(true);
   };
 
   // Computed stats
@@ -739,7 +1076,8 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
     const total = tasks.length;
     const dueToday = tasks.filter(t => isToday(t.dueDate) && t.status !== 'Done').length;
     const overdue = tasks.filter(t => t.status !== 'Done' && isPast(t.dueDate)).length;
-    return { total, dueToday, overdue };
+    const done = tasks.filter(t => t.status === 'Done').length;
+    return { total, dueToday, overdue, done };
   }, [tasks]);
 
   // Filtered & sorted tasks
@@ -774,127 +1112,141 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Tasks</h1>
+          <h1 className="text-2xl font-bold text-white">My Tasks & Calendar</h1>
           <p className="text-sm text-slate-400 mt-1">
             {stats.total} task{stats.total !== 1 ? 's' : ''}
             {stats.dueToday > 0 && <span className="text-amber-400"> · {stats.dueToday} due today</span>}
             {stats.overdue > 0 && <span className="text-rose-400"> · {stats.overdue} overdue</span>}
+            {stats.done > 0 && <span className="text-emerald-400"> · {stats.done} done</span>}
           </p>
         </div>
-        <button
-          onClick={() => { setEditingTask(null); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-medium hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-lg shadow-indigo-500/25"
-        >
-          <Icons.Plus size={18} /> Add Task
-        </button>
+        <div className="flex items-center gap-3">
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-slate-800/60 rounded-xl border border-slate-600/30 p-0.5">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200
+                ${viewMode === 'list'
+                  ? 'bg-indigo-500/20 text-indigo-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <Icons.Tasks size={14} /> List
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200
+                ${viewMode === 'calendar'
+                  ? 'bg-indigo-500/20 text-indigo-400 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <Icons.Calendar size={14} /> Calendar
+            </button>
+          </div>
+
+          <button
+            onClick={() => { setEditingTask(null); setPrefillDate(null); setShowForm(true); }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-medium hover:from-indigo-500 hover:to-indigo-400 transition-all duration-200 shadow-lg shadow-indigo-500/25"
+          >
+            <Icons.Plus size={18} /> Add Task
+          </button>
+        </div>
       </div>
 
-      {/* Filters & Sort */}
-      <div className="glass rounded-xl p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Icons.Search size={16} />
-            <input
-              type="text"
-              value={filter.search}
-              onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-              placeholder="Search tasks..."
-              className="w-full bg-slate-800/60 border border-slate-600/50 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:border-indigo-500/50 transition-colors"
-              style={{ paddingLeft: '2.25rem' }}
-            />
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
-              <Icons.Search size={14} />
+      {/* Calendar View */}
+      {viewMode === 'calendar' && (
+        <TaskCalendarView
+          tasks={tasks}
+          onDateClick={handleCalendarDateClick}
+          onToggle={toggleTask}
+          onEdit={(t) => { setEditingTask(t); setPrefillDate(null); setShowForm(true); }}
+          onDelete={deleteTask}
+        />
+      )}
+
+      {/* List View */}
+      {viewMode === 'list' && (
+        <>
+          {/* Filters & Sort */}
+          <div className="glass rounded-xl p-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Search */}
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={filter.search}
+                  onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+                  placeholder="Search tasks..."
+                  className="w-full bg-slate-800/60 border border-slate-600/50 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:border-indigo-500/50 transition-colors"
+                  style={{ paddingLeft: '2.25rem' }}
+                />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                  <Icons.Search size={14} />
+                </div>
+              </div>
+
+              {/* Status filter */}
+              <select
+                value={filter.status}
+                onChange={(e) => setFilter({ ...filter, status: e.target.value })}
+                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
+              >
+                <option value="All">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+
+              {/* Priority filter */}
+              <select
+                value={filter.priority}
+                onChange={(e) => setFilter({ ...filter, priority: e.target.value })}
+                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
+              >
+                <option value="All">All Priority</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+
+              {/* Sort */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
+              >
+                <option value="dueDate">Sort by Due Date</option>
+                <option value="priority">Sort by Priority</option>
+                <option value="createdAt">Sort by Created</option>
+              </select>
             </div>
           </div>
 
-          {/* Status filter */}
-          <select
-            value={filter.status}
-            onChange={(e) => setFilter({ ...filter, status: e.target.value })}
-            className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
-          >
-            <option value="All">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
-            <option value="Overdue">Overdue</option>
-          </select>
-
-          {/* Priority filter */}
-          <select
-            value={filter.priority}
-            onChange={(e) => setFilter({ ...filter, priority: e.target.value })}
-            className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
-          >
-            <option value="All">All Priority</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-          </select>
-
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-slate-800/60 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500/50 transition-colors"
-          >
-            <option value="dueDate">Sort by Due Date</option>
-            <option value="priority">Sort by Priority</option>
-            <option value="createdAt">Sort by Created</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Task List */}
-      {tasks.length === 0 ? (
-        <EmptyState
-          icon={<Icons.Clipboard size={64} />}
-          title="No tasks yet"
-          subtitle="Add your first task to get started! Stay organized and track your progress."
-          action={
-            <button
-              onClick={() => { setEditingTask(null); setShowForm(true); }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition-all duration-200"
-            >
-              <Icons.Plus size={18} /> Add Your First Task
-            </button>
-          }
-        />
-      ) : (
-        <>
-          {/* Active Tasks */}
-          {activeTasks.length === 0 && completedTasks.length === 0 ? (
-            <div className="text-center py-8 text-slate-500">
-              <p>No tasks match your filters.</p>
-            </div>
+          {/* Task List */}
+          {tasks.length === 0 ? (
+            <EmptyState
+              icon={<Icons.Clipboard size={64} />}
+              title="No tasks yet"
+              subtitle="Add your first task to get started! Stay organized and track your progress."
+              action={
+                <button
+                  onClick={() => { setEditingTask(null); setPrefillDate(null); setShowForm(true); }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition-all duration-200"
+                >
+                  <Icons.Plus size={18} /> Add Your First Task
+                </button>
+              }
+            />
           ) : (
-            <div className="space-y-3">
-              {activeTasks.map(task => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onToggle={toggleTask}
-                  onEdit={(t) => { setEditingTask(t); setShowForm(true); }}
-                  onDelete={deleteTask}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Completed Tasks (Collapsible) */}
-          {completedTasks.length > 0 && (
-            <div>
-              <button
-                onClick={() => setShowCompleted(!showCompleted)}
-                className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-3"
-              >
-                {showCompleted ? <Icons.ChevronDown size={14} /> : <Icons.ChevronRight size={14} />}
-                Completed ({completedTasks.length})
-              </button>
-              {showCompleted && (
-                <div className="space-y-3 animate-slide-in">
-                  {completedTasks.map(task => (
+            <>
+              {/* Active Tasks */}
+              {activeTasks.length === 0 && completedTasks.length === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  <p>No tasks match your filters.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {activeTasks.map(task => (
                     <TaskCard
                       key={task.id}
                       task={task}
@@ -905,7 +1257,33 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
                   ))}
                 </div>
               )}
-            </div>
+
+              {/* Completed Tasks (Collapsible) */}
+              {completedTasks.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => setShowCompleted(!showCompleted)}
+                    className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-3"
+                  >
+                    {showCompleted ? <Icons.ChevronDown size={14} /> : <Icons.ChevronRight size={14} />}
+                    Completed ({completedTasks.length})
+                  </button>
+                  {showCompleted && (
+                    <div className="space-y-3 animate-slide-in">
+                      {completedTasks.map(task => (
+                        <TaskCard
+                          key={task.id}
+                          task={task}
+                          onToggle={toggleTask}
+                          onEdit={(t) => { setEditingTask(t); setShowForm(true); }}
+                          onDelete={deleteTask}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </>
       )}
@@ -915,7 +1293,8 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
         <TaskFormModal
           task={editingTask}
           onSave={handleSaveTask}
-          onClose={() => { setShowForm(false); setEditingTask(null); }}
+          onClose={() => { setShowForm(false); setEditingTask(null); setPrefillDate(null); }}
+          prefillDate={prefillDate}
         />
       )}
     </div>
