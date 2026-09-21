@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { auth, provider, db } from './firebase';
 import { GATE_SYLLABUS } from './gateSyllabus';
+import { seedGateCalendar } from './gateSeeder';
 import GateDashboard from './components/GateDashboard';
 import GateSyllabus from './components/GateSyllabus';
 import GateStudyPortal from './components/GateStudyPortal';
@@ -1078,7 +1079,7 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
 }
 
 /** My Tasks & Calendar Module */
-function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
+function MyTasks({ tasks, saveTask, deleteTask, toggleTask, showToast }) {
   const [showForm, setShowForm] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [filter, setFilter] = useState({ status: 'All', priority: 'All', search: '' });
@@ -1192,6 +1193,14 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
               <Icons.Calendar size={14} /> Calendar
             </button>
           </div>
+
+          <button
+            onClick={() => seedGateCalendar(saveTask, tasks, showToast)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/20 text-xs font-medium transition-all duration-200"
+            title="Generate updated 6hr daily GO Classes GATE 2027 schedule"
+          >
+            <Icons.Calendar size={14} /> Sync 6h GO Schedule
+          </button>
 
           <button
             onClick={() => { setEditingTask(null); setPrefillDate(null); setShowForm(true); }}
@@ -4002,6 +4011,7 @@ export default function App() {
                   saveTask={saveMyTask}
                   deleteTask={deleteMyTask}
                   toggleTask={toggleMyTask}
+                  showToast={showToast}
                 />
               )}
               {activeModule === 'tracker' && (

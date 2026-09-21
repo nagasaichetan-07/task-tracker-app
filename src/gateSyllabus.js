@@ -1,47 +1,29 @@
 // GATE 2027 Computer Science & Information Technology Syllabus Seed Database
-// Source of Truth: https://gate2027.iitm.ac.in/
+// Updated according to GO Classes complete GATE 2027 course schedule & official GATE syllabus
+// Filtered out removed topics (Web Tech, Token Ring, Software Engineering, Complex Analysis)
+// Custom order: CN (Flow Control -> end), C, DSA, DBMS, OS, DLD, (NOV OFF), CO, DAA, EM, CD, TOC, Aptitude/English
 
 export const GATE_SYLLABUS = [
   {
     id: 'CN',
-    name: 'Computer Networks',
+    name: 'Computer Networks (Flow Control to End)',
     order: 1,
-    targetHours: 60,
+    targetHours: 36,
     selfRating: 3,
-    timeline: { start: '2026-08-14', end: '2026-08-31' },
+    timeline: { start: '2026-09-22', end: '2026-09-27' },
     sections: [
       {
-        name: 'Layering and Switching',
+        name: 'Data Link Layer (Flow & Error Control)',
         topics: [
           {
             id: 'CN-1-1',
-            name: 'Concept of Layering',
-            subtopics: ['OSI Protocol Stack', 'TCP/IP Protocol Stack', 'Layering Principles']
+            name: 'Flow Control Protocols',
+            subtopics: ['Stop-and-Wait Protocol', 'Go-Back-N ARQ', 'Selective Repeat ARQ', 'Efficiency & Throughput Calculations']
           },
           {
             id: 'CN-1-2',
-            name: 'Switching Basics',
-            subtopics: ['Packet Switching', 'Circuit Switching', 'Virtual Circuit Switching']
-          }
-        ]
-      },
-      {
-        name: 'Data Link Layer',
-        topics: [
-          {
-            id: 'CN-2-1',
-            name: 'Framing & Error Control',
-            subtopics: ['Framing methods', 'Error detection (CRC, Checksum)', 'Parity check']
-          },
-          {
-            id: 'CN-2-2',
-            name: 'Medium Access Control',
-            subtopics: ['ALOHA', 'CSMA/CD', 'CSMA/CA', 'Token Ring']
-          },
-          {
-            id: 'CN-2-3',
-            name: 'Ethernet Bridging',
-            subtopics: ['Transparent Bridges', 'Source Routing Bridges', 'Spanning Tree Protocol (STP)']
+            name: 'Error Control & Congestion Control',
+            subtopics: ['CRC & Checksum calculations', 'TCP Congestion Control (Slow Start, AIMD)', 'Window Size & Retransmission Timers']
           }
         ]
       },
@@ -49,19 +31,19 @@ export const GATE_SYLLABUS = [
         name: 'Network Layer',
         topics: [
           {
-            id: 'CN-3-1',
+            id: 'CN-2-1',
             name: 'IP Addressing & Subnetting',
-            subtopics: ['IPv4 addressing', 'Subnetting & Supernetting', 'Classless Inter-Domain Routing (CIDR)', 'Basics of IPv6']
+            subtopics: ['IPv4 Addressing', 'Subnetting & Supernetting', 'CIDR notation', 'Subnet Masks & Address Range', 'IPv6 Basics']
           },
           {
-            id: 'CN-3-2',
+            id: 'CN-2-2',
             name: 'Routing Protocols',
-            subtopics: ['Shortest Path Routing', 'Flooding', 'Distance Vector Routing', 'Link State Routing (OSPF)']
+            subtopics: ['Shortest Path Routing', 'Distance Vector Routing (RIP)', 'Link State Routing (OSPF)', 'Count to Infinity Problem']
           },
           {
-            id: 'CN-3-3',
+            id: 'CN-2-3',
             name: 'IP Support Protocols',
-            subtopics: ['Fragmentation & Reassembly', 'Address Resolution Protocol (ARP)', 'Dynamic Host Configuration Protocol (DHCP)', 'Network Address Translation (NAT)']
+            subtopics: ['IP Packet Header & Fragmentation', 'Address Resolution Protocol (ARP)', 'DHCP & NAT', 'ICMP Error Reporting']
           }
         ]
       },
@@ -69,19 +51,174 @@ export const GATE_SYLLABUS = [
         name: 'Transport & Application Layers',
         topics: [
           {
-            id: 'CN-4-1',
-            name: 'Transport Layer Protocols',
-            subtopics: ['User Datagram Protocol (UDP)', 'Transmission Control Protocol (TCP)', 'Connection Management', 'Flow Control (Sliding Window)', 'Error Control', 'Congestion Control']
+            id: 'CN-3-1',
+            name: 'Transport Protocols & Sockets',
+            subtopics: ['UDP Header & Features', 'TCP 3-Way Handshake & Connection Termination', 'TCP Segment Format', 'Socket Programming Basics']
           },
           {
-            id: 'CN-4-2',
-            name: 'Sockets',
-            subtopics: ['Socket programming basics', 'Port numbers', 'IP address binding']
-          },
-          {
-            id: 'CN-4-3',
+            id: 'CN-3-2',
             name: 'Application Layer Protocols',
-            subtopics: ['Hypertext Transfer Protocol (HTTP)', 'Domain Name System (DNS)', 'Simple Mail Transfer Protocol (SMTP)', 'Post Office Protocol (POP)', 'File Transfer Protocol (FTP)']
+            subtopics: ['DNS (Domain Name System)', 'HTTP & HTTPS', 'SMTP, POP3, IMAP', 'FTP (File Transfer Protocol)']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'C',
+    name: 'C Programming',
+    order: 2,
+    targetHours: 30,
+    selfRating: 4,
+    timeline: { start: '2026-09-28', end: '2026-10-02' },
+    sections: [
+      {
+        name: 'C Fundamentals & Control Flow',
+        topics: [
+          {
+            id: 'C-1-1',
+            name: 'Data Types, Operators & Precedence',
+            subtopics: ['Primitive Data Types', 'Arithmetic, Bitwise, Logical Operators', 'Operator Precedence & Associativity']
+          },
+          {
+            id: 'C-1-2',
+            name: 'Control Flow',
+            subtopics: ['If-Else Conditionals', 'Switch Case', 'For, While, Do-While Loops', 'Break & Continue']
+          }
+        ]
+      },
+      {
+        name: 'Functions, Pointers & Memory',
+        topics: [
+          {
+            id: 'C-1-3',
+            name: 'Functions & Parameter Passing',
+            subtopics: ['Function Declarations', 'Call by Value vs Call by Reference', 'Scope & Lifetime of Variables (static, auto, extern)']
+          },
+          {
+            id: 'C-1-4',
+            name: 'Pointers & Memory Management',
+            subtopics: ['Pointer Declarations & Dereferencing', 'Pointer Arithmetic', 'Dynamic Memory Allocation (malloc, calloc, realloc, free)']
+          },
+          {
+            id: 'C-1-5',
+            name: 'Arrays, Structures & Recursion',
+            subtopics: ['1D & 2D Array Pointers', 'Structures & Unions', 'Recursive Functions & Call Stack Analysis']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'DSA',
+    name: 'Data Structures',
+    order: 3,
+    targetHours: 42,
+    selfRating: 3,
+    timeline: { start: '2026-10-03', end: '2026-10-09' },
+    sections: [
+      {
+        name: 'Linear Data Structures',
+        topics: [
+          {
+            id: 'DSA-1-1',
+            name: 'Arrays, Stacks & Infix/Postfix',
+            subtopics: ['Array Storage Representation', 'Stack Operations', 'Infix to Postfix/Prefix Conversion', 'Postfix Expression Evaluation']
+          },
+          {
+            id: 'DSA-1-2',
+            name: 'Queues & Variations',
+            subtopics: ['Linear Queue', 'Circular Queue Implementation', 'Double-Ended Queue (Deque)', 'Priority Queue']
+          },
+          {
+            id: 'DSA-1-3',
+            name: 'Linked Lists',
+            subtopics: ['Singly Linked List', 'Doubly Linked List', 'Circular Linked List', 'Reversing & Loop Detection']
+          }
+        ]
+      },
+      {
+        name: 'Non-Linear Data Structures',
+        topics: [
+          {
+            id: 'DSA-2-1',
+            name: 'Trees & Binary Search Trees',
+            subtopics: ['Binary Tree Properties', 'Tree Traversals (Pre, In, Post, Level-order)', 'BST Insertion, Deletion & Search', 'AVL Trees']
+          },
+          {
+            id: 'DSA-2-2',
+            name: 'Heaps & Priority Queues',
+            subtopics: ['Binary Max-Heap & Min-Heap', 'Heapify Algorithm', 'HeapSort & Priority Queue Applications']
+          },
+          {
+            id: 'DSA-2-3',
+            name: 'Hash Tables',
+            subtopics: ['Hash Functions', 'Collision Resolution: Chaining', 'Open Addressing (Linear Probing, Quadratic, Double Hashing)']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'DBMS',
+    name: 'Database Management Systems',
+    order: 4,
+    targetHours: 42,
+    selfRating: 3,
+    timeline: { start: '2026-10-10', end: '2026-10-16' },
+    sections: [
+      {
+        name: 'Database Design & Relational Model',
+        topics: [
+          {
+            id: 'DB-1-1',
+            name: 'ER-Model to Relational Schema',
+            subtopics: ['Entities & Attributes', 'Relationship Types & Cardinalities', 'ER Diagram to Relational Tables Reduction']
+          },
+          {
+            id: 'DB-1-2',
+            name: 'Relational Algebra',
+            subtopics: ['Select, Project, Rename', 'Set Operations', 'Natural Join, Outer Joins', 'Division Operator']
+          },
+          {
+            id: 'DB-1-3',
+            name: 'Tuple & Domain Relational Calculus',
+            subtopics: ['Tuple Relational Calculus (TRC)', 'Domain Relational Calculus (DRC)', 'Safe Calculus Expressions']
+          }
+        ]
+      },
+      {
+        name: 'SQL & Normalization',
+        topics: [
+          {
+            id: 'DB-2-1',
+            name: 'SQL Queries & Subqueries',
+            subtopics: ['DDL & DML Commands', 'Nested Subqueries (IN, EXISTS, ALL, ANY)', 'Aggregate Functions', 'Group By & Having Clauses']
+          },
+          {
+            id: 'DB-2-2',
+            name: 'Functional Dependencies & Closure',
+            subtopics: ['Attribute Closure', 'Canonical Cover', 'Lossless Join Decomposition', 'Dependency Preservation']
+          },
+          {
+            id: 'DB-2-3',
+            name: 'Normal Forms (1NF to BCNF)',
+            subtopics: ['1NF, 2NF, 3NF', 'Boyce-Codd Normal Form (BCNF)', 'Decomposition Algorithms']
+          }
+        ]
+      },
+      {
+        name: 'Indexing & Concurrency Control',
+        topics: [
+          {
+            id: 'DB-3-1',
+            name: 'File Indexing & B/B+ Trees',
+            subtopics: ['Primary & Secondary Indexing', 'Dense vs Sparse Indexing', 'B-Tree & B+ Tree Node Insertion & Deletion']
+          },
+          {
+            id: 'DB-3-2',
+            name: 'Transactions & Concurrency',
+            subtopics: ['ACID Properties', 'Conflict & View Serializability', 'Two-Phase Locking (2PL, Strict 2PL)', 'Timestamp Ordering']
           }
         ]
       }
@@ -90,208 +227,53 @@ export const GATE_SYLLABUS = [
   {
     id: 'OS',
     name: 'Operating Systems',
-    order: 2,
-    targetHours: 50,
+    order: 5,
+    targetHours: 42,
     selfRating: 3,
-    timeline: { start: '2026-09-01', end: '2026-09-07' },
+    timeline: { start: '2026-10-17', end: '2026-10-23' },
     sections: [
       {
-        name: 'Processes and Threads',
+        name: 'Processes, Threads & Scheduling',
         topics: [
           {
             id: 'OS-1-1',
-            name: 'Process Management',
-            subtopics: ['Process States', 'Process Control Block (PCB)', 'System Calls', 'Context Switching']
+            name: 'Processes & Threads',
+            subtopics: ['Process States & PCB', 'System Calls & Context Switching', 'User vs Kernel Threads', 'IPC (Shared Memory, Message Passing)']
           },
           {
             id: 'OS-1-2',
-            name: 'Threads & IPC',
-            subtopics: ['User and Kernel Threads', 'Inter-process Communication (IPC)', 'Shared Memory', 'Message Passing']
+            name: 'CPU Scheduling Algorithms',
+            subtopics: ['FCFS, SJF, SRTF', 'Round Robin (Time Quantum impact)', 'Priority Scheduling', 'Gantt Charts & Average Waiting Time']
           }
         ]
       },
       {
-        name: 'CPU Scheduling',
+        name: 'Concurrency & Deadlocks',
         topics: [
           {
             id: 'OS-2-1',
-            name: 'Scheduling Algorithms',
-            subtopics: ['First-Come First-Served (FCFS)', 'Shortest Job First (SJF)', 'Round Robin (RR)', 'Priority Scheduling', 'Multi-level Queue Scheduling']
+            name: 'Process Synchronization',
+            subtopics: ['Critical Section Problem', 'Peterson\'s Solution', 'Semaphores (Counting & Binary)', 'Producer-Consumer & Reader-Writer Problems']
+          },
+          {
+            id: 'OS-2-2',
+            name: 'Deadlock Characterization & Handling',
+            subtopics: ['4 Necessary Conditions for Deadlock', 'Resource Allocation Graph', 'Deadlock Prevention', 'Banker\'s Algorithm for Avoidance']
           }
         ]
       },
       {
-        name: 'Concurrency and Synchronization',
+        name: 'Memory Management & File Systems',
         topics: [
           {
             id: 'OS-3-1',
-            name: 'Synchronization Mechanisms',
-            subtopics: ['Critical Section Problem', 'Peterson\'s Solution', 'Semaphores', 'Monitors', 'Classic Problems (Producer-Consumer, Reader-Writer, Dining Philosophers)']
-          }
-        ]
-      },
-      {
-        name: 'Deadlocks',
-        topics: [
-          {
-            id: 'OS-4-1',
-            name: 'Deadlock Handling',
-            subtopics: ['Deadlock Characterization', 'Prevention', 'Avoidance (Banker\'s Algorithm)', 'Detection and Recovery']
-          }
-        ]
-      },
-      {
-        name: 'Memory Management',
-        topics: [
-          {
-            id: 'OS-5-1',
-            name: 'Physical & Virtual Memory',
-            subtopics: ['Contiguous Allocation', 'Paging', 'Segmentation', 'Demand Paging', 'Virtual Memory Concepts']
+            name: 'Paging & Virtual Memory',
+            subtopics: ['Paging & Page Table Structure', 'Multi-Level Paging & TLB', 'Demand Paging & Page Fault Rate']
           },
           {
-            id: 'OS-5-2',
-            name: 'Page Replacement Algorithms',
-            subtopics: ['FIFO Page Replacement', 'Optimal Page Replacement', 'Least Recently Used (LRU)', 'Thrashing & Working Set Model']
-          }
-        ]
-      },
-      {
-        name: 'Storage & Files',
-        topics: [
-          {
-            id: 'OS-6-1',
-            name: 'File Systems',
-            subtopics: ['File access and allocation methods', 'Directory structure', 'Free space management']
-          },
-          {
-            id: 'OS-6-2',
-            name: 'I/O & Disk Scheduling',
-            subtopics: ['Disk scheduling algorithms (FCFS, SSTF, SCAN, LOOK)', 'I/O hardware', 'Interrupts']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'DBMS',
-    name: 'Databases',
-    order: 3,
-    targetHours: 45,
-    selfRating: 3,
-    timeline: { start: '2026-09-08', end: '2026-09-25' },
-    sections: [
-      {
-        name: 'Database Design',
-        topics: [
-          {
-            id: 'DB-1-1',
-            name: 'ER-Model',
-            subtopics: ['Entities and Attributes', 'Relationships', 'Constraints', 'ER Diagrams to Relational Schema']
-          }
-        ]
-      },
-      {
-        name: 'Relational Model & Languages',
-        topics: [
-          {
-            id: 'DB-2-1',
-            name: 'Relational Algebra',
-            subtopics: ['Selection and Projection', 'Set Operations', 'Joins (Inner, Outer, Self)', 'Division Operator']
-          },
-          {
-            id: 'DB-2-2',
-            name: 'Tuple Calculus',
-            subtopics: ['Tuple Relational Calculus (TRC)', 'Domain Relational Calculus (DRC)', 'Expressive Power']
-          },
-          {
-            id: 'DB-2-3',
-            name: 'Structured Query Language (SQL)',
-            subtopics: ['DDL and DML Commands', 'Subqueries & Nested Queries', 'Aggregate Functions', 'Group By & Having', 'Integrity Constraints']
-          }
-        ]
-      },
-      {
-        name: 'Normalization',
-        topics: [
-          {
-            id: 'DB-3-1',
-            name: 'Functional Dependencies',
-            subtopics: ['Attribute Closure', 'Canonical Cover', 'Lossless Join Decomposition', 'Dependency Preservation']
-          },
-          {
-            id: 'DB-3-2',
-            name: 'Normal Forms',
-            subtopics: ['First Normal Form (1NF)', 'Second Normal Form (2NF)', 'Third Normal Form (3NF)', 'Boyce-Codd Normal Form (BCNF)']
-          }
-        ]
-      },
-      {
-        name: 'Storage, Indexing & Concurrency',
-        topics: [
-          {
-            id: 'DB-4-1',
-            name: 'File Organization & Indexing',
-            subtopics: ['Primary and Secondary Indexing', 'B-Trees', 'B+ Trees', 'Hashing']
-          },
-          {
-            id: 'DB-4-2',
-            name: 'Transactions & Concurrency Control',
-            subtopics: ['ACID Properties', 'Serializability (Conflict & View)', 'Locking Protocols (2PL, Strict 2PL)', 'Timestamp Ordering', 'Deadlock in Transactions']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'CD',
-    name: 'Compiler Design',
-    order: 4,
-    targetHours: 65,
-    selfRating: 0,
-    timeline: { start: '2026-09-26', end: '2026-10-20' },
-    sections: [
-      {
-        name: 'Lexical Analysis & Parsing',
-        topics: [
-          {
-            id: 'CD-1-1',
-            name: 'Lexical Analysis',
-            subtopics: ['Token recognition', 'Regular expressions to DFA', 'Lexical Errors']
-          },
-          {
-            id: 'CD-1-2',
-            name: 'Syntax Analysis (Parsing)',
-            subtopics: ['Top-down parsing (LL(1))', 'Bottom-up parsing (Shift-Reduce, Operator Precedence)', 'LR parsing (SLR(1), LALR(1), CLR(1))', 'Parser generators']
-          }
-        ]
-      },
-      {
-        name: 'Translation & Environments',
-        topics: [
-          {
-            id: 'CD-2-1',
-            name: 'Syntax-Directed Translation',
-            subtopics: ['Synthesized and Inherited attributes', 'S-attributed and L-attributed definitions', 'Evaluation orders']
-          },
-          {
-            id: 'CD-2-2',
-            name: 'Runtime Environments',
-            subtopics: ['Activation records', 'Storage allocation strategies', 'Scope rules']
-          }
-        ]
-      },
-      {
-        name: 'Code Generation & Optimization',
-        topics: [
-          {
-            id: 'CD-3-1',
-            name: 'Intermediate Code Generation',
-            subtopics: ['Three-address code', 'Quadruples and Triples', 'Syntax trees', 'Translation of expressions']
-          },
-          {
-            id: 'CD-3-2',
-            name: 'Code Optimization & Generation',
-            subtopics: ['Local Optimization', 'Basic Blocks and Flow Graphs', 'Loop optimization', 'Register allocation']
+            id: 'OS-3-2',
+            name: 'Page Replacement & Disk Scheduling',
+            subtopics: ['FIFO, Optimal, LRU Replacement', 'Belady\'s Anomaly & Thrashing', 'Disk Scheduling (FCFS, SSTF, SCAN, LOOK, C-SCAN)']
           }
         ]
       }
@@ -300,43 +282,43 @@ export const GATE_SYLLABUS = [
   {
     id: 'DLD',
     name: 'Digital Logic Design',
-    order: 5,
-    targetHours: 35,
+    order: 6,
+    targetHours: 42,
     selfRating: 4,
-    timeline: { start: '2026-10-21', end: '2026-11-02' },
+    timeline: { start: '2026-10-24', end: '2026-10-30' },
     sections: [
       {
-        name: 'Combinational & Number Representations',
+        name: 'Combinational Logic',
         topics: [
           {
             id: 'DL-1-1',
-            name: 'Boolean Algebra & Minimization',
-            subtopics: ['Logic Gates', 'Boolean identities', 'Karnaugh Maps (K-maps)', 'Tabular method (Quine-McCluskey)']
+            name: 'Boolean Algebra & K-Maps',
+            subtopics: ['Boolean Postulates & Theorems', 'SOP & POS Form', 'Karnaugh Maps (K-Maps)', 'Don\'t Care Conditions', 'Implicants & Essential Prime Implicants']
           },
           {
             id: 'DL-1-2',
             name: 'Combinational Circuits',
-            subtopics: ['Arithmetic circuits (Adders, Subtractors)', 'Multiplexers & Demultiplexers', 'Decoders & Encoders', 'Code Converters']
+            subtopics: ['Half & Full Adders', 'Lookahead Carry Adder', 'Multiplexers (MUX) & Demultiplexers', 'Decoders & Encoders']
           },
           {
             id: 'DL-1-3',
             name: 'Number Representation',
-            subtopics: ['Fixed-point representation', 'Floating-point representation (IEEE 754)', 'Signed numbers (1\'s & 2\'s complement)']
+            subtopics: ['Fixed-Point Representation', '1\'s & 2\'s Complement Arithmetic', 'IEEE 754 Floating Point Format (Single & Double Precision)']
           }
         ]
       },
       {
-        name: 'Sequential Circuits',
+        name: 'Sequential Logic',
         topics: [
           {
             id: 'DL-2-1',
-            name: 'Latches & Flip-flops',
-            subtopics: ['SR Latch', 'SR, JK, D, T Flip-flops', 'Triggering methods', 'Master-Slave configuration']
+            name: 'Latches & Flip-Flops',
+            subtopics: ['SR Latch', 'JK, D, T Flip-Flops', 'Master-Slave Flip-Flops', 'Excitation Tables & Conversion']
           },
           {
             id: 'DL-2-2',
             name: 'Registers & Counters',
-            subtopics: ['Shift Registers', 'Asynchronous (Ripple) Counters', 'Synchronous Counters', 'Ring & Johnson Counters', 'State tables & State reduction']
+            subtopics: ['Shift Registers (SISO, SIPO, PISO, PIPO)', 'Asynchronous/Ripple Counters', 'Synchronous Counters', 'Mod-N Counters, Ring & Johnson Counters']
           }
         ]
       }
@@ -344,24 +326,24 @@ export const GATE_SYLLABUS = [
   },
   {
     id: 'CO',
-    name: 'Computer Organization',
-    order: 6,
-    targetHours: 55,
+    name: 'Computer Organization & Architecture',
+    order: 7,
+    targetHours: 42,
     selfRating: 4,
-    timeline: { start: '2026-11-03', end: '2026-11-16' },
+    timeline: { start: '2026-12-01', end: '2026-12-07' },
     sections: [
       {
-        name: 'Instruction Set & CPU Design',
+        name: 'CPU Design & Addressing Modes',
         topics: [
           {
             id: 'CO-1-1',
-            name: 'Instructions & Addressing',
-            subtopics: ['Instruction cycles', 'Addressing modes (Direct, Indirect, Register, Indexed)', 'CISC vs RISC architectures']
+            name: 'Machine Instructions & Addressing Modes',
+            subtopics: ['Instruction Cycle', 'Addressing Modes (Immediate, Direct, Indirect, Register, Indexed, PC-Relative)']
           },
           {
             id: 'CO-1-2',
-            name: 'ALU and Control Unit',
-            subtopics: ['Data-path design', 'Hardwired Control Unit', 'Microprogrammed Control Unit']
+            name: 'ALU & Control Unit Design',
+            subtopics: ['Data-path Architecture', 'Hardwired Control Unit', 'Microprogrammed Control Unit (Microinstructions, Control Memory)']
           }
         ]
       },
@@ -370,78 +352,18 @@ export const GATE_SYLLABUS = [
         topics: [
           {
             id: 'CO-2-1',
-            name: 'Instruction Pipelining',
-            subtopics: ['Pipeline stages', 'Hazards (Structural, Data, Control)', 'Hazard mitigation (Forwarding, Branch Prediction)', 'Performance speedup']
+            name: 'Instruction Pipelining & Hazards',
+            subtopics: ['Pipeline Stages & Execution', 'Structural, Data, Control Hazards', 'Operand Forwarding & Branch Prediction', 'Speedup & Throughput Calculations']
           },
           {
             id: 'CO-2-2',
-            name: 'Memory Hierarchy',
-            subtopics: ['Cache Mapping (Direct, Associative, Set-Associative)', 'Cache write policies', 'Main memory & Virtual Memory', 'Cache replacement algorithms']
-          }
-        ]
-      },
-      {
-        name: 'Input/Output Interfaces',
-        topics: [
-          {
-            id: 'CO-3-1',
-            name: 'I/O Interface & Data Transfer',
-            subtopics: ['Programmed I/O', 'Interrupt-driven I/O', 'Direct Memory Access (DMA)', 'Bus architectures']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'DSA',
-    name: 'DSA (Data Structures & C)',
-    order: 7,
-    targetHours: 50,
-    selfRating: 3,
-    timeline: { start: '2026-12-08', end: '2026-12-21' },
-    sections: [
-      {
-        name: 'Programming in C',
-        topics: [
-          {
-            id: 'DS-1-1',
-            name: 'C Programming Basics',
-            subtopics: ['Data Types & Operators', 'Control Flow (loops, conditionals)', 'Functions & Scope', 'Pointers & Memory Allocation', 'Structures & Unions']
+            name: 'Memory Hierarchy & Cache Mapping',
+            subtopics: ['Direct Mapping, Associative Mapping, Set-Associative Mapping', 'Cache Misses & Hit Ratio', 'Write-Through vs Write-Back Policies']
           },
           {
-            id: 'DS-1-2',
-            name: 'Recursion',
-            subtopics: ['Recursive functions', 'Call stacks', 'Tail recursion']
-          }
-        ]
-      },
-      {
-        name: 'Linear Data Structures',
-        topics: [
-          {
-            id: 'DS-2-1',
-            name: 'Arrays, Stacks & Queues',
-            subtopics: ['Array representations', 'Stack operations & applications', 'Queue variations (Double-ended, Priority)']
-          },
-          {
-            id: 'DS-2-2',
-            name: 'Linked Lists',
-            subtopics: ['Singly linked lists', 'Doubly linked lists', 'Circular linked lists']
-          }
-        ]
-      },
-      {
-        name: 'Non-Linear Data Structures',
-        topics: [
-          {
-            id: 'DS-3-1',
-            name: 'Trees & Heaps',
-            subtopics: ['Binary Trees', 'Binary Search Trees (BST)', 'AVL Trees', 'Binary Heaps (Max/Min Heaps)']
-          },
-          {
-            id: 'DS-3-2',
-            name: 'Graphs',
-            subtopics: ['Adjacency Matrix', 'Adjacency List', 'Graph Traversal basics']
+            id: 'CO-2-3',
+            name: 'I/O Data Transfer',
+            subtopics: ['Programmed I/O', 'Interrupt-Driven I/O', 'Direct Memory Access (DMA)']
           }
         ]
       }
@@ -451,107 +373,42 @@ export const GATE_SYLLABUS = [
     id: 'DAA',
     name: 'Design & Analysis of Algorithms',
     order: 8,
-    targetHours: 60,
+    targetHours: 42,
     selfRating: 3,
-    timeline: { start: '2026-12-22', end: '2027-01-04' },
+    timeline: { start: '2026-12-08', end: '2026-12-14' },
     sections: [
       {
-        name: 'Complexity & Basic Algorithms',
+        name: 'Analysis & Sorting',
         topics: [
           {
             id: 'AL-1-1',
-            name: 'Asymptotic Analysis',
-            subtopics: ['Big-Oh, Omega, Theta notations', 'Recurrence relations', 'Master Theorem']
+            name: 'Asymptotic Analysis & Recurrences',
+            subtopics: ['Big-O, Omega, Theta Notations', 'Master Theorem', 'Substitution & Recurrence Tree Methods']
           },
           {
             id: 'AL-1-2',
-            name: 'Searching, Sorting & Hashing',
-            subtopics: ['Binary Search', 'Sorting (Merge, Quick, Heap, Bubble, Insertion)', 'Hash Tables & Collision Resolution']
+            name: 'Searching & Sorting Algorithms',
+            subtopics: ['Binary Search', 'MergeSort & QuickSort Complexity', 'HeapSort & RadixSort']
           }
         ]
       },
       {
-        name: 'Design Techniques',
+        name: 'Algorithm Design Strategies',
         topics: [
           {
             id: 'AL-2-1',
-            name: 'Greedy & Divide-and-Conquer',
-            subtopics: ['Divide and Conquer (Merge sort, Quick sort)', 'Greedy method (Huffman coding, Fractional Knapsack)']
+            name: 'Greedy Algorithms & MST',
+            subtopics: ['Fractional Knapsack', 'Huffman Coding', 'Kruskal\'s & Prim\'s Minimum Spanning Tree Algorithms']
           },
           {
             id: 'AL-2-2',
             name: 'Dynamic Programming',
-            subtopics: ['Matrix Chain Multiplication', 'Longest Common Subsequence (LCS)', '0/1 Knapsack']
-          }
-        ]
-      },
-      {
-        name: 'Graph Algorithms',
-        topics: [
-          {
-            id: 'AL-3-1',
-            name: 'Traversals & Shortest Paths',
-            subtopics: ['Breadth-First Search (BFS)', 'Depth-First Search (DFS)', 'Dijkstra\'s Shortest Path Algorithm', 'Bellman-Ford Algorithm']
+            subtopics: ['0/1 Knapsack Problem', 'Matrix Chain Multiplication', 'Longest Common Subsequence (LCS)', 'Bellman-Ford Algorithm']
           },
           {
-            id: 'AL-3-2',
-            name: 'Minimum Spanning Trees',
-            subtopics: ['Kruskal\'s Algorithm', 'Prim\'s Algorithm', 'Union-Find data structure']
-          }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'TOC',
-    name: 'Theory of Computation',
-    order: 9,
-    targetHours: 50,
-    selfRating: 3,
-    timeline: { start: '2027-01-05', end: '2027-01-18' },
-    sections: [
-      {
-        name: 'Regular Languages and Automata',
-        topics: [
-          {
-            id: 'TC-1-1',
-            name: 'Finite Automata',
-            subtopics: ['Deterministic Finite Automata (DFA)', 'Nondeterministic Finite Automata (NFA)', 'Regular Expressions', 'Equivalence of NFA/DFA']
-          },
-          {
-            id: 'TC-1-2',
-            name: 'Regular Grammars & Languages',
-            subtopics: ['Pumping Lemma for Regular Languages', 'Closure properties of Regular Languages', 'Minimization of DFA']
-          }
-        ]
-      },
-      {
-        name: 'Context-Free Languages & Pushdown Automata',
-        topics: [
-          {
-            id: 'TC-2-1',
-            name: 'Context-Free Grammars',
-            subtopics: ['Context-Free Grammars (CFG)', 'Ambiguity in CFGs', 'Chomsky Normal Form (CNF)']
-          },
-          {
-            id: 'TC-2-2',
-            name: 'Pushdown Automata',
-            subtopics: ['Deterministic and Non-deterministic PDA', 'Equivalence of CFG and PDA', 'Pumping Lemma for CFLs', 'Closure properties of CFLs']
-          }
-        ]
-      },
-      {
-        name: 'Turing Machines & Decidability',
-        topics: [
-          {
-            id: 'TC-3-1',
-            name: 'Turing Machines',
-            subtopics: ['TM as language recognizer', 'Recursive and Recursively Enumerable languages', 'Closure properties']
-          },
-          {
-            id: 'TC-3-2',
-            name: 'Undecidability',
-            subtopics: ['Halting Problem', 'Diagonalization Language', 'Post Correspondence Problem (PCP)', 'Rice\'s Theorem']
+            id: 'AL-2-3',
+            name: 'Graph Algorithms & NP-Completeness',
+            subtopics: ['BFS & DFS Traversals', 'Dijkstra\'s Shortest Path Algorithm', 'Topological Sort', 'P, NP, NP-Hard, NP-Complete Definitions']
           }
         ]
       }
@@ -559,34 +416,29 @@ export const GATE_SYLLABUS = [
   },
   {
     id: 'EM',
-    name: 'Engineering Mathematics',
-    order: 10,
-    targetHours: 40,
-    selfRating: 5,
-    timeline: { start: '2027-01-19', end: '2027-01-25' },
+    name: 'Engineering & Discrete Mathematics',
+    order: 9,
+    targetHours: 54,
+    selfRating: 4,
+    timeline: { start: '2026-12-15', end: '2026-12-23' },
     sections: [
       {
         name: 'Discrete Mathematics',
         topics: [
           {
             id: 'EM-1-1',
-            name: 'Mathematical Logic',
-            subtopics: ['Propositional Logic', 'First-Order Logic', 'Rules of Inference']
+            name: 'Propositional & Predicate Logic',
+            subtopics: ['Logical Connectives & Truth Tables', 'First-Order Predicates & Quantifiers', 'Rules of Inference']
           },
           {
             id: 'EM-1-2',
-            name: 'Sets, Relations and Functions',
-            subtopics: ['Set Operations', 'Equivalence Relations', 'Partial Orders', 'Lattices', 'Groups']
+            name: 'Sets, Relations, Functions & Lattices',
+            subtopics: ['Equivalence Relations & Partitions', 'Partial Orders & Hasse Diagrams', 'Lattices & Groups']
           },
           {
             id: 'EM-1-3',
-            name: 'Combinatorics',
-            subtopics: ['Permutations & Combinations', 'Generating Functions', 'Recurrence Relations', 'Pigeonhole Principle']
-          },
-          {
-            id: 'EM-1-4',
-            name: 'Graph Theory',
-            subtopics: ['Connectivity', 'Eularian and Hamiltonian Paths', 'Graph Matching', 'Graph Coloring', 'Trees']
+            name: 'Combinatorics & Graph Theory',
+            subtopics: ['Permutations & Combinations', 'Pigeonhole Principle', 'Eulerian & Hamiltonian Graphs', 'Graph Coloring & Planarity']
           }
         ]
       },
@@ -596,12 +448,7 @@ export const GATE_SYLLABUS = [
           {
             id: 'EM-2-1',
             name: 'Matrices & Linear Systems',
-            subtopics: ['Matrix operations', 'Determinants', 'Systems of Linear Equations']
-          },
-          {
-            id: 'EM-2-2',
-            name: 'Vector Spaces & Eigenvalues',
-            subtopics: ['Eigenvalues & Eigenvectors', 'Diagonalization', 'LU decomposition']
+            subtopics: ['Determinants & Matrix Rank', 'Systems of Linear Equations (Ax = b)', 'Eigenvalues & Eigenvectors', 'LU Decomposition']
           }
         ]
       },
@@ -610,23 +457,98 @@ export const GATE_SYLLABUS = [
         topics: [
           {
             id: 'EM-3-1',
-            name: 'Calculus Fundamentals',
-            subtopics: ['Limits and Continuity', 'Differentiability', 'Mean Value Theorems', 'Maxima and Minima', 'Definite Integrals']
+            name: 'Limits, Calculus & Maxima/Minima',
+            subtopics: ['Limits, Continuity & Differentiability', 'Mean Value Theorems', 'Definite Integrals & Maxima/Minima']
           }
         ]
       },
       {
-        name: 'Probability and Statistics',
+        name: 'Probability & Statistics',
         topics: [
           {
             id: 'EM-4-1',
-            name: 'Probability & Distributions',
-            subtopics: ['Conditional Probability', 'Bayes Theorem', 'Random Variables (Discrete & Continuous)', 'Uniform, Normal, Exponential, Poisson, Binomial distributions']
+            name: 'Probability & Random Variables',
+            subtopics: ['Conditional Probability & Bayes Theorem', 'Discrete & Continuous Random Variables', 'Uniform, Normal, Exponential, Poisson, Binomial Distributions']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'CD',
+    name: 'Compiler Design',
+    order: 10,
+    targetHours: 36,
+    selfRating: 3,
+    timeline: { start: '2026-12-24', end: '2026-12-29' },
+    sections: [
+      {
+        name: 'Lexical & Syntax Analysis',
+        topics: [
+          {
+            id: 'CD-1-1',
+            name: 'Lexical Analysis & DFA',
+            subtopics: ['Regular Expressions to NFA/DFA', 'Lexical Analyzer Generator Concepts']
           },
           {
-            id: 'EM-4-2',
-            name: 'Statistics Fundamentals',
-            subtopics: ['Mean, Median, Mode', 'Standard Deviation', 'Correlation and Regression']
+            id: 'CD-1-2',
+            name: 'Syntax Analysis & Parsing',
+            subtopics: ['Context-Free Grammars', 'Top-Down LL(1) Parsing (FIRST & FOLLOW)', 'Bottom-Up LR Parsing (SLR(1), LALR(1), CLR(1))']
+          }
+        ]
+      },
+      {
+        name: 'Translation & Optimization',
+        topics: [
+          {
+            id: 'CD-2-1',
+            name: 'Syntax-Directed Translation & ICG',
+            subtopics: ['S-attributed & L-attributed SDDs', 'Three-Address Code Generation']
+          },
+          {
+            id: 'CD-2-2',
+            name: 'Runtime Environments & Optimization',
+            subtopics: ['Activation Records & Parameter Passing', 'Basic Blocks & Flow Graphs', 'Code Optimization Techniques']
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'TOC',
+    name: 'Theory of Computation',
+    order: 11,
+    targetHours: 42,
+    selfRating: 3,
+    timeline: { start: '2026-12-30', end: '2027-01-05' },
+    sections: [
+      {
+        name: 'Automata & Regular Languages',
+        topics: [
+          {
+            id: 'TC-1-1',
+            name: 'Finite Automata & Regular Expressions',
+            subtopics: ['DFA, NFA, NFA to DFA Equivalence', 'Regular Expression Properties', 'DFA Minimization']
+          },
+          {
+            id: 'TC-1-2',
+            name: 'Pumping Lemma & Closure Properties',
+            subtopics: ['Pumping Lemma for Regular Languages', 'Closure Properties of Regular & Context-Free Languages']
+          }
+        ]
+      },
+      {
+        name: 'Grammars, PDA & Decidability',
+        topics: [
+          {
+            id: 'TC-2-1',
+            name: 'Context-Free Grammars & PDA',
+            subtopics: ['Ambiguous Grammars & CNF', 'Pushdown Automata (DPDA vs NPDA)', 'Equivalence of CFG & PDA']
+          },
+          {
+            id: 'TC-2-2',
+            name: 'Turing Machines & Undecidability',
+            subtopics: ['Turing Machine Definition & Design', 'Recursive vs R.E. Languages', 'Halting Problem & Undecidability Reductions']
           }
         ]
       }
@@ -635,33 +557,18 @@ export const GATE_SYLLABUS = [
   {
     id: 'GA',
     name: 'General Aptitude & English',
-    order: 11,
-    targetHours: 20,
-    selfRating: 3,
-    timeline: { start: '2026-08-14', end: '2027-01-31' }, // Prepared concurrently
+    order: 12,
+    targetHours: 30,
+    selfRating: 4,
+    timeline: { start: '2026-09-22', end: '2027-01-07' },
     sections: [
       {
-        name: 'Quantitative Aptitude',
+        name: 'Quantitative Aptitude & Logic',
         topics: [
           {
             id: 'GA-1-1',
-            name: 'Numerical & Arithmetic Aptitude',
-            subtopics: ['Ratio & Proportion', 'Percentage', 'Profit, Loss & Interest', 'Averages & Mixtures', 'Time & Work', 'Time & Distance']
-          },
-          {
-            id: 'GA-1-2',
-            name: 'Data Interpretation',
-            subtopics: ['Bar charts', 'Pie charts', 'Tables & Line Graphs']
-          }
-        ]
-      },
-      {
-        name: 'Analytical Aptitude',
-        topics: [
-          {
-            id: 'GA-2-1',
-            name: 'Logical Reasoning',
-            subtopics: ['Deductive & Inductive Logic', 'Puzzles', 'Venn Diagrams', 'Series & Coding-Decoding']
+            name: 'Numerical Aptitude & Reasoning',
+            subtopics: ['Ratios, Percentages, Profit & Loss', 'Time & Work, Speed & Distance', 'Data Interpretation (Charts & Tables)']
           }
         ]
       },
@@ -669,14 +576,9 @@ export const GATE_SYLLABUS = [
         name: 'Verbal Aptitude',
         topics: [
           {
-            id: 'GA-3-1',
-            name: 'English Grammar & Vocabulary',
-            subtopics: ['Basic grammar (tenses, prepositions)', 'Vocabulary & Synonyms', 'Sentence Completion']
-          },
-          {
-            id: 'GA-3-2',
-            name: 'Reading Comprehension',
-            subtopics: ['Paragraph summary', 'Drawing inferences from passages']
+            id: 'GA-2-1',
+            name: 'English Grammar & Comprehension',
+            subtopics: ['Basic English Grammar & Tenses', 'Vocabulary & Sentence Completion', 'Reading Comprehension & Inferences']
           }
         ]
       }
