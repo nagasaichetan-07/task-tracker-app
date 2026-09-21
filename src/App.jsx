@@ -280,7 +280,15 @@ const statusColors = {
   'In Progress': { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
   Done: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
   Overdue: { bg: 'bg-rose-500/20', text: 'text-rose-400' },
+  concept: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
+  pyq: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+  revision: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
+  test: { bg: 'bg-rose-500/20', text: 'text-rose-400' },
+  semester: { bg: 'bg-sky-500/20', text: 'text-sky-400' },
 };
+
+const getStatusColor = (status) => statusColors[status] || statusColors['Pending'];
+const getPriorityColor = (priority) => priorityColors[priority] || priorityColors['Medium'];
 
 /** Pill Badge component */
 function PillBadge({ label, colorClass = '', className = '' }) {
@@ -642,11 +650,19 @@ function TaskFormModal({ task, onSave, onClose, prefillDate }) {
 /** Single task card */
 function TaskCard({ task, onToggle, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false);
-  const isDone = task.status === 'Done';
-  const isOverdue = !isDone && isPast(task.dueDate);
-  const displayStatus = isOverdue ? 'Overdue' : task.status;
-  const sc = statusColors[displayStatus];
-  const pc = priorityColors[task.priority];
+  if (!task) return null;
+
+  const name = task.name || task.title || 'Untitled Task';
+  const dueDate = task.dueDate || task.date || today();
+  const priority = task.priority || 'Medium';
+  const status = task.status || 'Pending';
+  const description = task.description || task.note || '';
+
+  const isDone = status === 'Done';
+  const isOverdue = !isDone && isPast(dueDate);
+  const displayStatus = isOverdue ? 'Overdue' : status;
+  const sc = getStatusColor(displayStatus);
+  const pc = getPriorityColor(priority);
 
   return (
     <div
@@ -670,20 +686,20 @@ function TaskCard({ task, onToggle, onEdit, onDelete }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`font-medium text-sm strikethrough ${isDone ? 'active text-slate-500' : 'text-white'}`}>
-              {task.name}
+              {name}
             </span>
             <PillBadge label={displayStatus} colorClass={`${sc.bg} ${sc.text}`} />
-            <PillBadge label={task.priority} colorClass={`${pc.bg} ${pc.text}`} />
+            <PillBadge label={priority} colorClass={`${pc.bg} ${pc.text}`} />
           </div>
 
           {/* Due date */}
           <div className={`text-xs mt-1 ${isOverdue ? 'text-rose-400' : 'text-slate-500'}`}>
-            Due: {fmtReadable(task.dueDate)}
-            {isToday(task.dueDate) && <span className="ml-1 text-amber-400 font-medium">· Today</span>}
+            Due: {fmtReadable(dueDate)}
+            {isToday(dueDate) && <span className="ml-1 text-amber-400 font-medium">· Today</span>}
           </div>
 
           {/* Description (expandable) */}
-          {task.description && (
+          {description && (
             <button
               onClick={() => setExpanded(!expanded)}
               className="text-xs text-indigo-400 hover:text-indigo-300 mt-1 flex items-center gap-1 transition-colors"
@@ -692,9 +708,9 @@ function TaskCard({ task, onToggle, onEdit, onDelete }) {
               {expanded ? 'Hide' : 'Show'} description
             </button>
           )}
-          {expanded && task.description && (
+          {expanded && description && (
             <p className="text-sm text-slate-400 mt-2 animate-slide-in leading-relaxed">
-              {task.description}
+              {description}
             </p>
           )}
         </div>
@@ -729,16 +745,20 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
 
   const calDayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  const safeTasks = useMemo(() => tasks || [], [tasks]);
+
   // Build task map: dateStr -> tasks[]
   const tasksByDate = useMemo(() => {
     const map = {};
-    tasks.forEach(t => {
-      if (!t.dueDate) return;
-      if (!map[t.dueDate]) map[t.dueDate] = [];
-      map[t.dueDate].push(t);
+    safeTasks.forEach(t => {
+      if (!t) return;
+      const dDate = t.dueDate || t.date;
+      if (!dDate || typeof dDate !== 'string') return;
+      if (!map[dDate]) map[dDate] = [];
+      map[dDate].push(t);
     });
     return map;
-  }, [tasks]);
+  }, [safeTasks]);
 
   // Calendar grid cells
   const calendarCells = useMemo(() => {
@@ -784,22 +804,25 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
     return tasksByDate[selectedDate] || [];
   }, [tasksByDate, selectedDate]);
 
-  const selectedActiveTasks = selectedTasks.filter(t => t.status !== 'Done');
+  const selectedActiveTasks = selectedTasks.filter(t => (t.status || 'Pending') !== 'Done');
   const selectedDoneTasks = selectedTasks.filter(t => t.status === 'Done');
 
   // Stats for selected month
   const monthStats = useMemo(() => {
     const mk = `${calYear}-${String(calMonth + 1).padStart(2, '0')}`;
     let total = 0, done = 0, overdue = 0;
-    tasks.forEach(t => {
-      if (t.dueDate && t.dueDate.startsWith(mk)) {
+    safeTasks.forEach(t => {
+      if (!t) return;
+      const dDate = t.dueDate || t.date;
+      const tStatus = t.status || 'Pending';
+      if (dDate && typeof dDate === 'string' && dDate.startsWith(mk)) {
         total++;
-        if (t.status === 'Done') done++;
-        else if (isPast(t.dueDate)) overdue++;
+        if (tStatus === 'Done') done++;
+        else if (isPast(dDate)) overdue++;
       }
     });
-    return { total, done, overdue, pending: total - done - overdue };
-  }, [tasks, calYear, calMonth]);
+    return { total, done, overdue, pending: Math.max(0, total - done - overdue) };
+  }, [safeTasks, calYear, calMonth]);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-fade-in">
@@ -868,7 +891,7 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
             const isSelected = dateStr === selectedDate;
             const isTodayDate = dateStr === today();
             const isPastDate = dateStr < today();
-            const hasOverdue = dayTasks.some(t => t.status !== 'Done' && isPast(t.dueDate));
+            const hasOverdue = dayTasks.some(t => t.status !== 'Done' && isPast(t.dueDate || t.date));
             const allDone = dayTasks.length > 0 && dayTasks.every(t => t.status === 'Done');
             const highPriority = dayTasks.some(t => t.priority === 'High' && t.status !== 'Done');
 
@@ -980,10 +1003,12 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
           <div className="space-y-2 max-h-[calc(100vh-380px)] overflow-y-auto pr-1 custom-scrollbar">
             {/* Active Tasks */}
             {selectedActiveTasks.map(task => {
-              const isOverdue = task.status !== 'Done' && isPast(task.dueDate);
-              const displayStatus = isOverdue ? 'Overdue' : task.status;
-              const sc = statusColors[displayStatus];
-              const pc = priorityColors[task.priority];
+              const tDueDate = task.dueDate || task.date || today();
+              const isOverdue = task.status !== 'Done' && isPast(tDueDate);
+              const displayStatus = isOverdue ? 'Overdue' : (task.status || 'Pending');
+              const sc = getStatusColor(displayStatus);
+              const pc = getPriorityColor(task.priority || 'Medium');
+              const tName = task.name || task.title || 'Untitled Task';
               return (
                 <div
                   key={task.id}
@@ -996,10 +1021,10 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
                       className="mt-0.5 w-4 h-4 rounded border-2 border-slate-500 hover:border-indigo-400 flex items-center justify-center flex-shrink-0 transition-all duration-200"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-white truncate">{task.name}</p>
+                      <p className="text-sm font-medium text-white truncate">{tName}</p>
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         <PillBadge label={displayStatus} colorClass={`${sc.bg} ${sc.text}`} />
-                        <PillBadge label={task.priority} colorClass={`${pc.bg} ${pc.text}`} />
+                        <PillBadge label={task.priority || 'Medium'} colorClass={`${pc.bg} ${pc.text}`} />
                       </div>
                     </div>
                     <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -1016,32 +1041,35 @@ function TaskCalendarView({ tasks, onDateClick, onToggle, onEdit, onDelete }) {
             })}
 
             {/* Completed Tasks */}
-            {selectedDoneTasks.map(task => (
-              <div
-                key={task.id}
-                className="glass rounded-xl p-3.5 opacity-60 transition-all duration-200 group"
-              >
-                <div className="flex items-start gap-2.5">
-                  <button
-                    onClick={() => onToggle(task.id)}
-                    className="mt-0.5 w-4 h-4 rounded border-2 bg-emerald-500 border-emerald-500 flex items-center justify-center flex-shrink-0"
-                  >
-                    <Icons.Check size={10} />
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-500 line-through truncate">{task.name}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <PillBadge label="Done" colorClass="bg-emerald-500/20 text-emerald-400" />
+            {selectedDoneTasks.map(task => {
+              const tName = task.name || task.title || 'Untitled Task';
+              return (
+                <div
+                  key={task.id}
+                  className="glass rounded-xl p-3.5 opacity-60 transition-all duration-200 group"
+                >
+                  <div className="flex items-start gap-2.5">
+                    <button
+                      onClick={() => onToggle(task.id)}
+                      className="mt-0.5 w-4 h-4 rounded border-2 bg-emerald-500 border-emerald-500 flex items-center justify-center flex-shrink-0"
+                    >
+                      <Icons.Check size={10} />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-500 line-through truncate">{tName}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <PillBadge label="Done" colorClass="bg-emerald-500/20 text-emerald-400" />
+                      </div>
+                    </div>
+                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => onDelete(task.id)} className="p-1 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-rose-400 transition-all" title="Delete">
+                        <Icons.Trash size={13} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => onDelete(task.id)} className="p-1 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-rose-400 transition-all" title="Delete">
-                      <Icons.Trash size={13} />
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -1071,41 +1099,63 @@ function MyTasks({ tasks, saveTask, deleteTask, toggleTask }) {
     setShowForm(true);
   };
 
+  const safeTasks = useMemo(() => tasks || [], [tasks]);
+
   // Computed stats
   const stats = useMemo(() => {
-    const total = tasks.length;
-    const dueToday = tasks.filter(t => isToday(t.dueDate) && t.status !== 'Done').length;
-    const overdue = tasks.filter(t => t.status !== 'Done' && isPast(t.dueDate)).length;
-    const done = tasks.filter(t => t.status === 'Done').length;
+    const total = safeTasks.length;
+    const dueToday = safeTasks.filter(t => {
+      if (!t) return false;
+      const dDate = t.dueDate || t.date;
+      const tStatus = t.status || 'Pending';
+      return isToday(dDate) && tStatus !== 'Done';
+    }).length;
+    const overdue = safeTasks.filter(t => {
+      if (!t) return false;
+      const dDate = t.dueDate || t.date;
+      const tStatus = t.status || 'Pending';
+      return tStatus !== 'Done' && isPast(dDate);
+    }).length;
+    const done = safeTasks.filter(t => t && t.status === 'Done').length;
     return { total, dueToday, overdue, done };
-  }, [tasks]);
+  }, [safeTasks]);
 
   // Filtered & sorted tasks
   const { activeTasks, completedTasks } = useMemo(() => {
-    let filtered = tasks.filter(t => {
+    let filtered = safeTasks.filter(t => {
+      if (!t) return false;
+      const tName = String(t.name || t.title || '');
+      const tDueDate = t.dueDate || t.date || '';
+      const tStatus = t.status || 'Pending';
+      const tPriority = t.priority || 'Medium';
+
       if (filter.status !== 'All') {
         if (filter.status === 'Overdue') {
-          if (!(t.status !== 'Done' && isPast(t.dueDate))) return false;
-        } else if (t.status !== filter.status) return false;
+          if (!(tStatus !== 'Done' && isPast(tDueDate))) return false;
+        } else if (tStatus !== filter.status) return false;
       }
-      if (filter.priority !== 'All' && t.priority !== filter.priority) return false;
-      if (filter.search && !t.name.toLowerCase().includes(filter.search.toLowerCase())) return false;
+      if (filter.priority !== 'All' && tPriority !== filter.priority) return false;
+      if (filter.search && !tName.toLowerCase().includes(filter.search.toLowerCase())) return false;
       return true;
     });
 
     const priorityOrder = { High: 0, Medium: 1, Low: 2 };
     filtered.sort((a, b) => {
-      if (sortBy === 'dueDate') return a.dueDate.localeCompare(b.dueDate);
-      if (sortBy === 'priority') return priorityOrder[a.priority] - priorityOrder[b.priority];
-      if (sortBy === 'createdAt') return new Date(b.createdAt) - new Date(a.createdAt);
+      const aDate = a?.dueDate || a?.date || '';
+      const bDate = b?.dueDate || b?.date || '';
+      const aPrio = a?.priority || 'Medium';
+      const bPrio = b?.priority || 'Medium';
+      if (sortBy === 'dueDate') return String(aDate).localeCompare(String(bDate));
+      if (sortBy === 'priority') return (priorityOrder[aPrio] ?? 1) - (priorityOrder[bPrio] ?? 1);
+      if (sortBy === 'createdAt') return new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0);
       return 0;
     });
 
     return {
-      activeTasks: filtered.filter(t => t.status !== 'Done'),
-      completedTasks: filtered.filter(t => t.status === 'Done'),
+      activeTasks: filtered.filter(t => (t?.status || 'Pending') !== 'Done'),
+      completedTasks: filtered.filter(t => t?.status === 'Done'),
     };
-  }, [tasks, filter, sortBy]);
+  }, [safeTasks, filter, sortBy]);
 
   return (
     <div className="space-y-6 animate-fade-in">
